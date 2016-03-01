@@ -4,6 +4,7 @@ A library of MATLAB tools  for multibody simulation the  dynamic behavior of rig
 Current Features
 
 The following components of a multibody system are currently supported:
+
 Joints
 
     Spherical
