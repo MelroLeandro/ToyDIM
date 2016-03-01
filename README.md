@@ -1,6 +1,10 @@
 # ToyDIM
 A library of MATLAB tools  for multibody simulation the  dynamic behavior of rigid and flexible body systems with arbitrary topology.
 
+Metodology
+
+     The methodology used follows (Parviz E. Nikravesh 1989), using a Augmented Lagrange Formulation.
+
 Current Features
 
 The following components of a multibody system are currently supported:
@@ -29,3 +33,13 @@ Simulation results: Propagation of
     The constraint and joint reaction forces acting on the bodies centers of mass
     The applied forces acting on the bodies centers of mass
     The output values of all user-defined functions
+
+Simulation results: Propagation of
+
+    All body coordinates, their first derivatives
+    The Jacobian and Lagrange multiplies of the position constraints
+    The constraint and joint reaction forces acting on the bodies centers of mass
+
+Getting started
+
+    See Rrods3Revel2_v01.m and Rrods3Sherical2_v01.m
