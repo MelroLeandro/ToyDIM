@@ -25,7 +25,6 @@ Force Elements
     Translational (The mentioned force types are applied along the line connecting two points)
 
 
-If as many drivers as degrees of freedom of the multibody system are specified, inverse dynamic simulation is performed. In this case, the output data are calculated by Newton-Raphson iteration. Otherwise, numerical integration is performed, still allowing the inclusion of driver elements.
 Simulation results: Propagation of
 
     All body coordinates, their first and second derivatives
