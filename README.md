@@ -1,13 +1,17 @@
 # ToyDIM
-A library of MATLAB tools  for multibody simulation the  dynamic behavior of rigid and flexible body systems with arbitrary topology.
+A library of MATLAB tools  used to simulate the dynamic behavior of a rigid and flexible body system with arbitrary topology.
 
 Metodology
 
-     The methodology used follows (Parviz E. Nikravesh 1989), using a Augmented Lagrange Formulation.
+     The methodology used for rigid multibody systems dynamics follows (Parviz E. Nikravesh 1989), using a Augmented Lagrange Formulation and the DIM. To descibe large relative rotations in deformable systems a finite element representation of each flexible component is used following the methodolgy presented by Jorge Ambrosio in DSM2007.
 
 Current Features
 
 The following components of a multibody system are currently supported:
+
+Bodies:
+     rigid 
+     flexible
 
 Joints
 
