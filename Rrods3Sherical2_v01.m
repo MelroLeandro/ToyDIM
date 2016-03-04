@@ -4,7 +4,7 @@
 % Problem: 3 rods linked using two sherical joints 3D
 % Autor: Carlos Leandro
 % Data: 25Fev16
-% Version: 
+% Version: 1.0
 %-------------------------------------------------------------------------%
 clc
 clear all
