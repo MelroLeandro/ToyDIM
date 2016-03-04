@@ -41,13 +41,15 @@ World.beta=5.0;
 World.C1=[];
 World.Err=[];
 
+% Flexible Multibody system
+World.Flexible=true;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Multibody system configuration:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 BodyList={'C1'}; % list of system bodies
-%JointList={'Fix'}; % list of dynamic constrains
-JointList={};
+JointList={'Fix'}; % list of dynamic constrains
 
 NumBodies= length(BodyList);
 %%
@@ -77,7 +79,7 @@ for i=1:4
         Bodies.(bodyName).node.(node).omegaP=[0,0,0]';  % nodal amgular relative velocity
         Bodies.(bodyName).node.(node).omegaP_d=[0,0,0]';
         % node lattice external forces
-        Bodies.(bodyName).node.(node).f=[0,0,0]'; % linear
+        Bodies.(bodyName).node.(node).f=[0,0,0.1]'; % linear
         Bodies.(bodyName).node.(node).n=[0,0,0]'; % rotational
     end
 end

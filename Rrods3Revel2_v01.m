@@ -24,7 +24,7 @@ global TT Err Ke Pe
 %%
 % World parameters
 
-World.g=[0;0;-0.00981]; % force to be applied on each body
+World.gravity=[0;0;-0.00981]; % force to be applied on each body
 World.ElasticNet = false;  % force are generated using and elastic network
 
 % Contact
@@ -42,6 +42,9 @@ World.beta=5.0;
 World.C1=[];
 World.Err=[];
 
+% Flexible Multibody system
+World.Flexible=false;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Multibody system configuration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,6 +56,7 @@ JointList={'Fix','J1','J2','J3'}; % list of dynamic constrains
 %Geometry
 
 Bodies.Ground.geo.m=1; % massa
+Bodies.Ground.flexible=false;
 
 % Inertia tensor for body Ground
 Bodies.Ground.geo.JP=diag([1,1,1]);
@@ -81,6 +85,7 @@ Bodies.Ground.np=[0,0,0]';   % initial momento
 Bodies.C1.geo.m=1; % rod mass
 Bodies.C1.geo.h=1; % rod length
 Bodies.C1.geo.r=1; % rod radius
+Bodies.C1.flexible=false;
 
 % Inertia tensor for body C1
 Bodies.C1.geo.JP=diag([1/12*(Bodies.C1.geo.m*(3*Bodies.C1.geo.r^2+Bodies.C1.geo.h^2)),1/2*(Bodies.C1.geo.m*Bodies.C1.geo.r^2),...
@@ -114,6 +119,7 @@ Bodies.C1.np=[0,0,0]';
 Bodies.C2.geo.m=1; % rod mass
 Bodies.C2.geo.h=1; % rod length
 Bodies.C2.geo.r=1; % rod radius
+Bodies.C2.flexible=false;
 
 % Inertia tensor for body C2
 Bodies.C2.geo.JP=diag([1/12*(Bodies.C2.geo.m*(3*Bodies.C2.geo.r^2+Bodies.C2.geo.h^2)),1/2*(Bodies.C2.geo.m*Bodies.C2.geo.r^2),...
@@ -147,6 +153,7 @@ Bodies.C2.np=[0,0,0]';
 Bodies.C3.geo.m=1; % rod mass
 Bodies.C3.geo.h=1; % rod length
 Bodies.C3.geo.r=1; % rod radius
+Bodies.C3.flexible=false;
 
 % Inertia tensor for body C3
 Bodies.C3.geo.JP=diag([1/12*(Bodies.C3.geo.m*(3*Bodies.C3.geo.r^2+Bodies.C3.geo.h^2)),1/2*(Bodies.C3.geo.m*Bodies.C3.geo.r^2),...
@@ -198,16 +205,24 @@ Joints.J3.body_1='C2'; % body_1 identifier
 Joints.J3.body_2='C3'; % body_2 identifier
 Joints.J3.point='P3';  % point identifier
 
+% Tansport Multibody system information
+
+World.nbodies = length(BodyList);  % number of bodies in the system 
+World.njoints = length(JointList); % number of joints in the system
+World.NNodes  = 0 ;            % count number of nodes in the system
+World.Msize   = World.NNodes*6+World.nbodies*6; % mass matrix size
+
 %%
 % Mass matrix assembly
 
 y_d=[];
 
 nbodies=length(BodyList);
-world.M=zeros(nbodies*6);
+World.M=zeros(nbodies*6);
+
 for indexE=1:nbodies
     BodyName=BodyList{indexE};
-    Bodies.(BodyName).g=World.g;
+    Bodies.(BodyName).g=World.gravity;
     O=zeros(3,3);
     index=(indexE-1)*6+1;
     

@@ -8,7 +8,7 @@ global JointList % List with dynamic constrains identifiers
 global Bodies % Structure with every rigid bodies in the system
 global Joints % Structure with dynamis constrains
 
-% y=[r;p;r_d;wp];
+% y=[r;p;r_d;wP];
 nbodies=World.nbodies; % number of bodies in the system 
 njoints=World.njoints; % number of joints in the system
 
@@ -17,11 +17,12 @@ count = 1;
 
 for indexE=1:nbodies
     BodyName=BodyList{indexE};
+    
     Bodies.(BodyName).r  = y((count-1)+1:(count-1)+3); 
     Bodies.(BodyName).p  = y((count-1)+4:(count-1)+7);
     Bodies.(BodyName).r_d= y((count-1)+8:(count-1)+10);
     Bodies.(BodyName).wP = y((count-1)+11:(count-1)+13);
-    
+
     count = count+13;
     
     Bodies.(BodyName).n=[0;0;0];
@@ -35,6 +36,7 @@ for indexE=1:nbodies
            Bodies.(BodyName).node.(NodeName).omegaP   = y((count-1)+4:(count-1)+6); % equilibrium orientation
            Bodies.(BodyName).node.(NodeName).deltaP_d = y((count-1)+7:(count-1)+9); % 
            Bodies.(BodyName).node.(NodeName).omegaP_d = y((count-1)+10:(count-1)+12); % 
+           
            Bodies.(BodyName).node.(NodeName).f=[0;0;0];
            Bodies.(BodyName).node.(NodeName).n=[0;0;0];
            count=count+12;
@@ -43,29 +45,15 @@ for indexE=1:nbodies
         Bodies.(BodyName).f=Bodies.(BodyName).g;
     else
         Bodies.(BodyName).f= Bodies.(BodyName).g;
-    end
-    
-    % total potential energy in a network
-%     if World.ElasticNet && Bodies.(BodyName).coupled
-%         xi=Bodies.(BodyName).r;
-%         for idx=1:Bodies.(BodyName).num
-%             BodyName2=Bodies.(BodyName).Nei{idx};
-%             xj=Bodies.(BodyName2).r;
-%             dx = xj-xi;
-%             mdx = dx'*dx;
-%             norma=sqrt(mdx);
-%             if norma>1e-10
-%                 Bodies.(BodyName).f = Bodies.(BodyName).f + stiffness*km*dx/norma;
-%             end
-%         end
-%         Pe=0;
-%     end
+    end    
 end
+
 
 Ke = 0; % Kinetic energy
 Pe = 0; % potential energy
 
 for indexE=1:nbodies 
+    
     BodyName=BodyList{indexE};
 
     p_mag=sqrt(Bodies.(BodyName).p'*Bodies.(BodyName).p); 
@@ -106,7 +94,7 @@ for indexE=1:nbodies
            
            Bodies.(BodyName).node.(NodeName).bP = Bodies.(BodyName).node.(NodeName).xP + Bodies.(BodyName).node.(NodeName).deltaP; % equilibrium positions
            d_d = Bodies.(BodyName).r_d+Bodies.(BodyName).A*skew(Bodies.(BodyName).w)*Bodies.(BodyName).node.(NodeName).bP+Bodies.(BodyName).A*Bodies.(BodyName).node.(NodeName).deltaP_d;
-           alphaP = Bodies.(BodyName).wp + Bodies.(BodyName).node.(NodeName).omegaP_d; 
+           alphaP = Bodies.(BodyName).wP + Bodies.(BodyName).node.(NodeName).omegaP_d; 
            Bodies.(BodyName).node.(NodeName).d_d = d_d;
            Bodies.(BodyName).node.(NodeName).alphaP = alphaP;
 
@@ -137,22 +125,24 @@ for indexE=1:nbodies
     
     index = Bodies.(BodyName).index; % body index in the mass matrix
     
-    wp = Bodies.(BodyName).wp;
+    wP = Bodies.(BodyName).wP;
     
-    np=skew(Bodies.(BodyName).wp)*Bodies.(BodyName).geo.JP*Bodies.(BodyName).wp;
+    np=skew(Bodies.(BodyName).wP)*Bodies.(BodyName).geo.JP*Bodies.(BodyName).wP;
     
     
     % external forces
 
-    g(index:index*6)=[Bodies.(BodyName).f;Bodies.(BodyName).n+np];
+    g(index:index+5)=[Bodies.(BodyName).f;Bodies.(BodyName).n+np];
     
-    q(index:index*6)=[ Bodies.(BodyName).r ; Bodies.(BodyName).wp];
     
-    q_d(index:index*6)=[ Bodies.(BodyName).r_d;Bodies.(BodyName).wp];
+    q_d(index:index+5)=[ Bodies.(BodyName).r_d;Bodies.(BodyName).wP];
     
-    m_rr=0;
        
     if Bodies.(BodyName).flexible % have a flexible part
+        
+        q(index:index+5)=[ Bodies.(BodyName).r ; Bodies.(BodyName).wP];
+        
+        m_rr=0;
         
         R  =  Bodies.(BodyName).A;
         
@@ -208,23 +198,27 @@ for indexE=1:nbodies
            
            % quadratic velocity term: nodes
            
-           s(y_node:y_node+2)  =-mk*skew(wp)*skew(wp)*bPk-2*mk*skew(wp)*R'*deltaP_d;
+           s(y_node:y_node+2)  =-mk*skew(wP)*skew(wP)*bPk-2*mk*skew(wP)*R'*deltaP_d;
            s(y_node+3:y_node+5)= [0;0;0];
            
            % quadratic velocity term: tmp for body
-           s1= s1-mk*R*skew(wp)*skew(wp)*bPk-2*mk*R*skew(wp)*deltaP_d;
-           s2= s2-mk*skew(bPk)*skew(wp)*skew(wp)*bPk-2*mk*skew(bPk)*skew(wp)*deltaP_d;
+           s1= s1-mk*R*skew(wP)*skew(wP)*bPk-2*mk*R*skew(wP)*deltaP_d;
+           s2= s2-mk*skew(bPk)*skew(wP)*skew(wP)*bPk-2*mk*skew(bPk)*skew(wP)*deltaP_d;
         end
-               
-    end
-    World.M(index:index+2,index:index+2)    = m_rr*eye(3);
-    World.M(index:index+2,index+3:index+5)  = - M1 ;
-    World.M(index+3:index+5,index:index+2)  =   M2 ;
-    World.M(index+3:index+5,index+3:index+5)=   M3 ;
+        World.M(index:index+2,index:index+2)    = m_rr*eye(3);
+        World.M(index:index+2,index+3:index+5)  = - M1 ;
+        World.M(index+3:index+5,index:index+2)  =   M2 ;
+        World.M(index+3:index+5,index+3:index+5)=   M3 ;
+        
+        % quadratic velocity term: body
+        s(index:index+2)  = s1;
+        s(index+3:index+5)= s2;
     
-    % quadratic velocity term: body
-    s(index:index+2)  = s1;
-    s(index+3:index+5)= s2;
+    else
+        World.M(index:index+2,index:index+2) = Bodies.(BodyName).geo.m*eye(3);
+        World.M(index+3:index+5,index+3:index+5)= Bodies.(BodyName).geo.JP; 
+    end
+    
 end
 
 % TMP: Used for debuging
@@ -239,7 +233,8 @@ if njoints > 0
 
     for indexJ=1:njoints 
         Jointname=JointList{indexJ};
-
+        
+        % Body is rigedly fixed in the space
         if strcmp(Joints.(Jointname).type, 'Fix')
             Joints.(Jointname).constr=zeros(6,1);
             Joints.(Jointname).Di=eye(6);
@@ -250,6 +245,7 @@ if njoints > 0
             nlines=nlines+6;
         end
 
+        % Spherical Joint linking two rigid bodies 
         if strcmp(Joints.(Jointname).type, 'She')
 
             Ci=Joints.(Jointname).body_1;
@@ -278,6 +274,7 @@ if njoints > 0
 
         end
 
+        % Revolute joint linking two rigid bodies
         if strcmp(Joints.(Jointname).type, 'Rev')
 
             C1=Joints.(Jointname).body_1;
@@ -326,7 +323,8 @@ if njoints > 0
     end
 
     % Jacobian
-    D=zeros(nlines,nbodies*6);
+    D=zeros(nlines,World.Msize);
+    
     Phi=zeros(nlines,1);
 
     cont=1;
@@ -371,11 +369,19 @@ if njoints > 0
     World.Phid=Phid;
     
     World.Z=[World.M,D';D,zeros(World.size,World.size)];
-    World.F=[World.g;World.gamma];  
+    if World.Flexible
+        World.F=[World.g+World.s-Bodies.C1.G*World.q;World.gamma]; % Buggy.....
+    else
+        World.F=[World.g;World.gamma]; 
+    end
     
 else
     World.Z=World.M;
-    World.F=World.g+World.s-Bodies.C1.G*World.q; 
+    if World.Flexible
+        World.F=World.g+World.s-Bodies.C1.G*World.q;  % Buggy.....
+    else
+        World.F=World.g;
+    end
 end
 
 %q_d=World.Z\World.F;
@@ -385,27 +391,27 @@ q_d=(1e-10*eye(size(Msis))+Msis)\World.Z'*World.F;
 
 u_d=[];
 
-count=1;
 
 for indexE=1:nbodies
     BodyName=BodyList{indexE};
-        
-    Bodies.(BodyName).r_dd=q_d((count-1) +1:(count-1) +3); 
-    Bodies.(BodyName).w_d=q_d((count-1) +4:(count-1) +6); 
+    index = Bodies.(BodyName).index;
+
+    Bodies.(BodyName).r_dd=q_d(index:index+2); 
+    Bodies.(BodyName).w_d=q_d(index+3:index+5);
     
-    count = count +6;
+    Bodies.(BodyName).p_d=0.5*Local(Bodies.(BodyName).p)'*Bodies.(BodyName).wP;
     
-    Bodies.(BodyName).p_d=0.5*Local(Bodies.(BodyName).p)'*Bodies.(BodyName).wp;
-    
-    flex=[];
+    u_d=[u_d; Bodies.(BodyName).r_d; Bodies.(BodyName).p_d; Bodies.(BodyName).r_dd; Bodies.(BodyName).w_d]; 
     
     if Bodies.(BodyName).flexible % is a flexible body
            
         for index1=1:Bodies.(BodyName).NumberNodes
             NodeName = Bodies.(BodyName).NodeList{index1};
             
-            deltaP_dd = q_d((count-1) +1:(count-1) +3);
-            omegaP_dd = q_d((count-1) +4:(count-1) +6);
+            idx = Bodies.(BodyName).node.(NodeName).idx;
+            
+            deltaP_dd = q_d(idx:idx+2);
+            omegaP_dd = q_d(idx+3:idx+4);
             
             Bodies.(BodyName).node.(NodeName).delta_dd=deltaP_dd; 
             Bodies.(BodyName).node.(NodeName).omega_dd=omegaP_dd;
@@ -413,14 +419,9 @@ for indexE=1:nbodies
             deltaP_d= Bodies.(BodyName).node.(NodeName).deltaP_d; 
             omegaP_d= Bodies.(BodyName).node.(NodeName).omegaP_d;
             
-            count = count +6;
-            
-            flex=[flex; deltaP_d; omegaP_d ; deltaP_dd; omegaP_dd ];
+            u_d=[u_d; deltaP_d; omegaP_d ; deltaP_dd; omegaP_dd ];
         end
     end
-    
-    u_d=[u_d; Bodies.(BodyName).r_d; Bodies.(BodyName).p_d; Bodies.(BodyName).r_dd; Bodies.(BodyName).w_d; flex]; 
-    
 end
 end
 
