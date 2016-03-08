@@ -68,10 +68,25 @@ Bodies.(bodyName).NumFixedFrameNodes=1;    % number of fixed nodes
 count=1; 
 countd=1;
 
-for i=1:4
-    for j=1:4
+for i=1:16
         
-        node=sprintf('C%dx%d',i,j);  
+        node=sprintf('C%dC',100+i);  
+        nodeB=sprintf('C%dC',100+i-1);
+        nodeA=sprintf('C%dC',100+i+1);
+        
+        %
+        % System topology
+
+        if i>1 && i<16
+            Bodies.(bodyName).node.(node).Nei={nodeA,nodeB};
+            Bodies.(bodyName).node.(node).num=2;
+        elseif i==1
+            Bodies.(bodyName).node.(node).Nei={nodeA};
+            Bodies.(bodyName).node.(node).num=1;                
+        else
+            Bodies.(bodyName).node.(node).Nei={nodeB};
+            Bodies.(bodyName).node.(node).num=1;               
+        end
       
         for ii=1:Bodies.(bodyName).NumFixedFrameNodes
             if count == Bodies.(bodyName).FixedFrameNodeOrder(ii)
@@ -84,63 +99,24 @@ for i=1:4
         count=count+1;
         
         % system masses and geometry
-        Bodies.(bodyName).node.(node).m=1;      % node mass
-        Bodies.(bodyName).node.(node).mu=1;      % local rot inertia
+        Bodies.(bodyName).node.(node).m=0.001;      % node mass
+        Bodies.(bodyName).node.(node).mu=0.001;      % local rot inertia
         Bodies.(bodyName).node.(node).charge=0; % node chage
-        Bodies.(bodyName).node.(node).x=[0,i*.5,j*.5]';  % initial global positions
+        Bodies.(bodyName).node.(node).x=[0,0,i*.5]';  % initial global positions
         Bodies.(bodyName).node.(node).w=[0,0,0]';  % initial hlobal orientation
         Bodies.(bodyName).node.(node).deltaP=[0,0,0]';  % relative displacement
         Bodies.(bodyName).node.(node).deltaP_d=[0,0,0]';
         Bodies.(bodyName).node.(node).omegaP=[0,0,0]';  % nodal amgular relative velocity
         Bodies.(bodyName).node.(node).omegaP_d=[0,0,0]';
         % node lattice external forces
-        Bodies.(bodyName).node.(node).f=[0,0,0.0]'; % linear
+        Bodies.(bodyName).node.(node).f=[i,0,0.0]'; % linear
         Bodies.(bodyName).node.(node).n=[0,0,0]'; % rotational
-        if i==4 && j == 4
-            Bodies.(bodyName).node.(node).f=[100,100,100]'; % linear
-            Bodies.(bodyName).node.(node).n=[0,0,0]'; % rotational
-        end
-    end
+        %if i==16
+        %    Bodies.(bodyName).node.(node).f=[i*10,0,0]'; % linear
+        %    Bodies.(bodyName).node.(node).n=[0,0,0]'; % rotational
+        %end
+
 end
-
-%%
-% System topology
-
-Bodies.(bodyName).node.C1x1.Nei={'C1x2','C2x1'};
-Bodies.(bodyName).node.C1x1.num=2;
-Bodies.(bodyName).node.C1x2.Nei={'C1x1','C1x3','C2x2'};
-Bodies.(bodyName).node.C1x2.num=3;
-Bodies.(bodyName).node.C1x3.Nei={'C1x2','C1x4','C2x3'};
-Bodies.(bodyName).node.C1x3.num=3;
-Bodies.(bodyName).node.C1x4.Nei={'C1x3','C2x4'};
-Bodies.(bodyName).node.C1x4.num=2;
-Bodies.(bodyName).node.C2x1.Nei={'C1x1','C2x2','C3x1'};
-Bodies.(bodyName).node.C2x1.num=3;
-Bodies.(bodyName).node.C2x2.Nei={'C1x2','C2x1','C2x3','C3x2'};
-Bodies.(bodyName).node.C2x2.num=4;
-Bodies.(bodyName).node.C2x3.Nei={'C1x3','C2x2','C2x4','C3x3'};
-Bodies.(bodyName).node.C2x3.num=4;
-Bodies.(bodyName).node.C2x4.Nei={'C1x4','C2x3','C3x4'};
-Bodies.(bodyName).node.C2x4.num=3;
-Bodies.(bodyName).node.C3x1.Nei={'C2x1','C3x2','C4x1'};
-Bodies.(bodyName).node.C3x1.num=3;
-Bodies.(bodyName).node.C3x2.Nei={'C2x2','C3x1','C3x3','C4x2'};
-Bodies.(bodyName).node.C3x2.num=4;
-Bodies.(bodyName).node.C3x3.Nei={'C2x3','C3x2','C3x4','C4x3'};
-Bodies.(bodyName).node.C3x3.num=4;
-Bodies.(bodyName).node.C3x4.Nei={'C2x4','C3x3','C4x4'};
-Bodies.(bodyName).node.C3x4.num=3;
-Bodies.(bodyName).node.C4x1.Nei={'C3x1','C4x2'};
-Bodies.(bodyName).node.C4x1.num=2;
-Bodies.(bodyName).node.C4x2.Nei={'C3x2','C4x1','C4x3'};
-Bodies.(bodyName).node.C4x2.num=3;
-Bodies.(bodyName).node.C4x3.Nei={'C3x3','C4x2','C4x4'};
-Bodies.(bodyName).node.C4x3.num=3;
-Bodies.(bodyName).node.C4x4.Nei={'C3x4','C4x3'};
-Bodies.(bodyName).node.C4x4.num=2;
-%%
-% Contact matrix
-
 
 %%
 % System center of mass and the moment of inertia tensor
@@ -238,7 +214,7 @@ Bodies.C1.wp  = [0,0,0]';   % initial angular aceleration
 Bodies.C1.np  = [0,0,0]';   % initial momento
 
 % Matrial properties
-Bodies.C1.stiffness = .1;
+Bodies.C1.stiffness = 30000;
 
 %%
 % Contact matrix K; The global stiffness matrix G;
@@ -369,7 +345,7 @@ end
 
 % set integration parametters
 t0   = 0;    % Initial time
-t    = 200.00; % Final time
+t    = 100.00; % Final time
 step = 0.01; % Time-step
 
 
@@ -396,12 +372,12 @@ for index = 1:World.nbodies
   
     hold on
 
-    for indexP=1:length(Bodies.(BodyName).PointsList)
-        pointname=Bodies.(BodyName).PointsList{indexP};
-
-        z=Simulation.(BodyName).(pointname);
-        plot(z(2,:), z(3,:), 'r')
-    end
+%     for indexP=1:length(Bodies.(BodyName).PointsList)
+%         pointname=Bodies.(BodyName).PointsList{indexP};
+% 
+%         z=Simulation.(BodyName).(pointname);
+%         plot(z(2,:), z(3,:), 'r')
+%     end
 
     if Bodies.(BodyName).flexible % have a flexible part
 
@@ -429,12 +405,12 @@ for index = 1:World.nbodies
   
     hold on
     
-    for indexP=1:length(Bodies.(BodyName).PointsList)
-        pointname=Bodies.(BodyName).PointsList{indexP};
-
-        z=Simulation.(BodyName).(pointname);
-        plot(z(1,:), z(3,:), 'r')
-    end
+%     for indexP=1:length(Bodies.(BodyName).PointsList)
+%         pointname=Bodies.(BodyName).PointsList{indexP};
+% 
+%         z=Simulation.(BodyName).(pointname);
+%         plot(z(1,:), z(3,:), 'r')
+%     end
 
     if Bodies.(BodyName).flexible % have a flexible part
 
@@ -465,12 +441,12 @@ for idx=1:World.nbodies
     
     hold on
     
-    for indexP=1:length(Bodies.(BodyName).PointsList)
-        pointname=Bodies.(BodyName).PointsList{indexP};
-
-        z=Simulation.(BodyName).(pointname);
-        plot(z(1,:), z(2,:), 'r')
-    end
+%     for indexP=1:length(Bodies.(BodyName).PointsList)
+%         pointname=Bodies.(BodyName).PointsList{indexP};
+% 
+%         z=Simulation.(BodyName).(pointname);
+%         plot(z(1,:), z(2,:), 'r')
+%     end
 
     if Bodies.(BodyName).flexible % have a flexible part
 
@@ -639,7 +615,7 @@ figure;
 plot(T,Y(15,:),'r')
  
 figure;
-contour(10e8*Y(:,1:100))
+contour(Y(:,1:100))
 colorbar()
 
 %% Error on thr system constrains

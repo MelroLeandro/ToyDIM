@@ -8,6 +8,8 @@ global JointList % List with dynamic constrains identifiers
 global Bodies % Structure with every rigid bodies in the system
 global Joints % Structure with dynamis constrains
 
+global Simulation
+
 % y=[r;p;r_d;wP];
 nbodies=World.nbodies; % number of bodies in the system 
 njoints=World.njoints; % number of joints in the system
@@ -15,13 +17,15 @@ njoints=World.njoints; % number of joints in the system
 
 count = 1;
 
+World.y=y;
+
 for indexE=1:nbodies
     BodyName=BodyList{indexE};
     
-    Bodies.(BodyName).r  = y((count-1)+1:(count-1)+3); 
-    Bodies.(BodyName).p  = y((count-1)+4:(count-1)+7);
-    Bodies.(BodyName).r_d= y((count-1)+8:(count-1)+10);
-    Bodies.(BodyName).wP = y((count-1)+11:(count-1)+13);
+    Bodies.(BodyName).r  = y(count  :count+2); 
+    Bodies.(BodyName).p  = y(count+3:count+6);
+    Bodies.(BodyName).r_d= y(count+7:count+9);
+    Bodies.(BodyName).wP = y(count+10:count+12);
 
     count = count+13;
     
@@ -30,24 +34,26 @@ for indexE=1:nbodies
     if  Bodies.(BodyName).flexible
               
         for  index1=1:Bodies.(BodyName).NumberNodes
-           NodeName=Bodies.(BodyName).NodeList{index1};
+           NodeName=Bodies.(BodyName).NodeList(index1,:);
            
-           Bodies.(BodyName).node.(NodeName).deltaP   = y((count-1)+1:(count-1)+3); % equilibrium positions
-           Bodies.(BodyName).node.(NodeName).omegaP   = y((count-1)+4:(count-1)+6); % equilibrium orientation
-           Bodies.(BodyName).node.(NodeName).deltaP_d = y((count-1)+7:(count-1)+9); % 
-           Bodies.(BodyName).node.(NodeName).omegaP_d = y((count-1)+10:(count-1)+12); % 
+           Bodies.(BodyName).node.(NodeName).deltaP   = y(count  :count+2 );    % equilibrium positions
+           Bodies.(BodyName).node.(NodeName).omegaP   = y(count+3:count+5 );  % equilibrium orientation
+           Bodies.(BodyName).node.(NodeName).deltaP_d = y(count+6:count+8 );  % 
+           Bodies.(BodyName).node.(NodeName).omegaP_d = y(count+9:count+11); % 
            
-           Bodies.(BodyName).node.(NodeName).f=[0;0;0];
-           Bodies.(BodyName).node.(NodeName).n=[0;0;0];
+           if t> .1
+               Bodies.(BodyName).node.(NodeName).f=[0;0;0];
+               Bodies.(BodyName).node.(NodeName).n=[0;0;0];
+           end
            count=count+12;
         end
               
-        Bodies.(BodyName).f=Bodies.(BodyName).g;
+        Bodies.(BodyName).f= Bodies.(BodyName).g;
+        
     else
         Bodies.(BodyName).f= Bodies.(BodyName).g;
     end    
 end
-
 
 Ke = 0; % Kinetic energy
 Pe = 0; % potential energy
@@ -90,18 +96,23 @@ for indexE=1:nbodies
         
         for  index1=1:Bodies.(BodyName).NumberNodes
             
-           NodeName=Bodies.(BodyName).NodeList{index1};
+           NodeName=Bodies.(BodyName).NodeList(index1,:);
            
            Bodies.(BodyName).node.(NodeName).bP = Bodies.(BodyName).node.(NodeName).xP + Bodies.(BodyName).node.(NodeName).deltaP; % equilibrium positions
            d_d = Bodies.(BodyName).r_d+Bodies.(BodyName).A*skew(Bodies.(BodyName).w)*Bodies.(BodyName).node.(NodeName).bP+Bodies.(BodyName).A*Bodies.(BodyName).node.(NodeName).deltaP_d;
            alphaP = Bodies.(BodyName).wP + Bodies.(BodyName).node.(NodeName).omegaP_d; 
            Bodies.(BodyName).node.(NodeName).d_d = d_d;
            Bodies.(BodyName).node.(NodeName).alphaP = alphaP;
+           
+           sP=Bodies.(BodyName).A*Bodies.(BodyName).node.(NodeName).bP; 
+           Bodies.(BodyName).node.(NodeName).rP=Bodies.(BodyName).r+sP; 
 
            mk  = Bodies.(BodyName).node.(NodeName).m;
            muk = Bodies.(BodyName).node.(NodeName).mu;           
            
            Ke = Ke+mk*(d_d'*d_d) + muk*(alphaP'*alphaP);
+           
+           Simulation.(BodyName).(NodeName)= [Simulation.(BodyName).(NodeName) Bodies.(BodyName).node.(NodeName).rP];
         end
     else
         Ke = Ke+Bodies.(BodyName).geo.m*Bodies.(BodyName).r_d'*Bodies.(BodyName).r_d;
@@ -154,7 +165,7 @@ for indexE=1:nbodies
         s2 = zeros(3,1);
         
         for  index1 = 1:Bodies.(BodyName).NumberNodes
-           NodeName = Bodies.(BodyName).NodeList{index1};
+           NodeName = Bodies.(BodyName).NodeList(index1,:);
            
            y_node= Bodies.(BodyName).node.(NodeName).y_index;
            
@@ -170,12 +181,12 @@ for indexE=1:nbodies
            m_rr = m_rr + mk;
            
            % Mrf:
-           World.M(index:index+2,y_node:y_node+2)    = mk*eye(3);
+           World.M(index:index+2,y_node:y_node+2)    = mk*R;
            World.M(index+3:index+5,y_node:y_node+2)  = mk*skew(bPk);
            World.M(index+3:index+5,y_node+3:y_node+5)= muk*eye(3);
            
            % Mfr:
-           World.M(y_node:y_node+2,index:index+2)    = mk*eye(3);
+           World.M(y_node:y_node+2,index:index+2)    = mk*R';
            World.M(y_node:y_node+2,index+3:index+5)  = -mk*skew(bPk);
            World.M(y_node+3:y_node+5,index+3:index+5)= muk*eye(3);
            
@@ -193,8 +204,8 @@ for indexE=1:nbodies
            
            % external forces
 
-           g(y_node:y_node+2)  = Bodies.(BodyName).node.(NodeName).f;
-           g(y_node+3:y_node+5)= Bodies.(BodyName).node.(NodeName).n+np;
+           g(y_node:y_node+2)  =  Bodies.(BodyName).node.(NodeName).f;
+           g(y_node+3:y_node+5)= [0;0;0]; %Bodies.(BodyName).node.(NodeName).n+np;
            
            % quadratic velocity term: nodes
            
@@ -205,6 +216,7 @@ for indexE=1:nbodies
            s1= s1-mk*R*skew(wP)*skew(wP)*bPk-2*mk*R*skew(wP)*deltaP_d;
            s2= s2-mk*skew(bPk)*skew(wP)*skew(wP)*bPk-2*mk*skew(bPk)*skew(wP)*deltaP_d;
         end
+
         World.M(index:index+2,index:index+2)    = m_rr*eye(3);
         World.M(index:index+2,index+3:index+5)  = - M1 ;
         World.M(index+3:index+5,index:index+2)  =   M2 ;
@@ -371,6 +383,7 @@ if njoints > 0
     World.Z=[World.M,D';D,zeros(World.size,World.size)];
     if World.Flexible
         World.F=[World.g+World.s-Bodies.C1.G*World.q;World.gamma]; % Buggy.....
+        %World.F=[World.g;World.gamma]; 
     else
         World.F=[World.g;World.gamma]; 
     end
@@ -387,7 +400,7 @@ end
 %q_d=World.Z\World.F;
 
 Msis=World.Z'*World.Z;
-q_d=(1e-10*eye(size(Msis))+Msis)\World.Z'*World.F;
+q_d=(1e-15*eye(size(Msis))+Msis)\World.Z'*World.F;
 
 u_d=[];
 
@@ -406,12 +419,12 @@ for indexE=1:nbodies
     if Bodies.(BodyName).flexible % is a flexible body
            
         for index1=1:Bodies.(BodyName).NumberNodes
-            NodeName = Bodies.(BodyName).NodeList{index1};
+            NodeName = Bodies.(BodyName).NodeList(index1,:);
             
             idx = Bodies.(BodyName).node.(NodeName).idx;
             
             deltaP_dd = q_d(idx:idx+2);
-            omegaP_dd = q_d(idx+3:idx+4);
+            omegaP_dd = q_d(idx+3:idx+5);
             
             Bodies.(BodyName).node.(NodeName).delta_dd=deltaP_dd; 
             Bodies.(BodyName).node.(NodeName).omega_dd=omegaP_dd;
@@ -423,5 +436,6 @@ for indexE=1:nbodies
         end
     end
 end
+
 end
 
