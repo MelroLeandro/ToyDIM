@@ -1,9 +1,9 @@
-# ToyDIM
+﻿# ToyDIM
 A library of MATLAB tools  used to simulate the dynamic behavior of a rigid and flexible body system with arbitrary topology.
 
-Metodology
+Methodology
 
-     The methodology used for rigid multibody systems dynamics follows (Parviz E. Nikravesh 1989), using a Augmented Lagrange Formulation and the DIM. To descibe large relative rotations in deformable systems a finite element representation of each flexible component is used following the methodolgy presented by Jorge Ambrosio in DSM2007.
+     The methodology used for rigid multibody systems dynamics follows (Parviz E. Nikravesh 1989), using a Augmented Lagrange Formulation and the DIM. To describe large relative rotations in deformable systems a finite element representation of each flexible component is used following the methodology presented by Jorge Ambrosio in DSM2007.
 
 Current Features
 
@@ -45,4 +45,14 @@ Simulation results: Propagation of
 
 Getting started
 
-    See Rrods3Revel2_v01.m and Rrods3Sherical2_v01.m
+    See 
+
+	Rrods3Revel2_v01.m - chain with 4 rigid bodies and 3 revolute joints
+        Rrods3Sherical2_v01.m - chain with 4 rigid bodies and 3 spherical joints
+	ElasticRod3_v01.m - single elastic body defined by a chain with 3 nodes
+	ElasticRod16_v02.m - single elastic body defined by a chain with 16 nodes
+	ElasticSurface16Modes_v02.m - single elastic body defined by a surface with 4x4 nodes
+	ElasticBlock32Modes_v02.m - single elastic body defined by a block with 4x4x2 nodes
+
+    use
+	GraphMovie(file) -  with data from the elastic body simulations for avi generation

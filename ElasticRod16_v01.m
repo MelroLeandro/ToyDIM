@@ -1,8 +1,8 @@
-%-------------------------------------------------------------------------%
+﻿%-------------------------------------------------------------------------%
 %------------------------------Multibody Dynamic--------------------------%
 %------------------------------A toy system-------------------------------% 
-% Problem:  3 rods linked using two revolute joints 3D
-% Autor: Carlos Leandro
+% Problem:  3 rods linked using two evolute joints 3D
+% Author: Carlos Leandro
 % Data: 25Fev16
 % Version: 
 %-------------------------------------------------------------------------%
@@ -16,7 +16,7 @@ global World    % used to describe the world
 global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
 global Bodies   % Structure with every rigid bodies in the system
-global Joints   % Structure with dynamis constrains 
+global Joints   % Structure with dynamics constrains 
 
 
 global TT Err Ke Pe
@@ -103,16 +103,16 @@ for i=1:16
         Bodies.(bodyName).node.(node).mu=0.001;      % local rot inertia
         Bodies.(bodyName).node.(node).charge=0; % node chage
         Bodies.(bodyName).node.(node).x=[0,0,i*.5]';  % initial global positions
-        Bodies.(bodyName).node.(node).w=[0,0,0]';  % initial hlobal orientation
+        Bodies.(bodyName).node.(node).w=[0,0,0]';  % initial global orientation
         Bodies.(bodyName).node.(node).deltaP=[0,0,0]';  % relative displacement
         Bodies.(bodyName).node.(node).deltaP_d=[0,0,0]';
-        Bodies.(bodyName).node.(node).omegaP=[0,0,0]';  % nodal amgular relative velocity
+        Bodies.(bodyName).node.(node).omegaP=[0,0,0]';  % nodal angular relative velocity
         Bodies.(bodyName).node.(node).omegaP_d=[0,0,0]';
         % node lattice external forces
-        Bodies.(bodyName).node.(node).f=[i,0,0.0]'; % linear
+        Bodies.(bodyName).node.(node).f=[0,0,16/i]'; % linear
         Bodies.(bodyName).node.(node).n=[0,0,0]'; % rotational
         %if i==16
-        %    Bodies.(bodyName).node.(node).f=[i*10,0,0]'; % linear
+        %    Bodies.(bodyName).node.(node).f=[0,0,1]'; % linear
         %    Bodies.(bodyName).node.(node).n=[0,0,0]'; % rotational
         %end
 
@@ -197,24 +197,24 @@ Bodies.C1.NumberNodes = length(listnodes); % Number of flexible nodes in the bod
 
 % Points in body C1
 Bodies.C1.PointsList    = {'P1'};
-Bodies.C1.Points.P1.sPp = [0,0,0]'; % local frame coordenates
+Bodies.C1.Points.P1.sPp = [0,0,0]'; % local frame coordinates
 
 % Vectors in body C1
 Bodies.C1.VectorsList   = {'V1'};
-Bodies.C1.Vectors.V1.sP = [1,0,0]'; % local frame coordenates
+Bodies.C1.Vectors.V1.sP = [1,0,0]'; % local frame coordinates
 
 % Body initial values
 Bodies.C1.r   = Bodies.C1.center_mass;
 Bodies.C1.r_d = [0,0,0]';  % initial velocity
 Bodies.C1.r_dd= [0,0,0]'; % initial acceleration
-Bodies.C1.p   = [1,0,0,0]';  % initial euler parameters
+Bodies.C1.p   = [1,0,0,0]';  % initial Euler parameters
 Bodies.C1.p_d = [0,0,0,0]';% derivada dos parametros de Euler
 Bodies.C1.w   = [0,0,0]';    % initial angular velocity
-Bodies.C1.wp  = [0,0,0]';   % initial angular aceleration
-Bodies.C1.np  = [0,0,0]';   % initial momento
+Bodies.C1.wp  = [0,0,0]';   % initial angular acceleration
+Bodies.C1.np  = [0,0,0]';   % initial moment
 
 % Matrial properties
-Bodies.C1.stiffness = 30000;
+Bodies.C1.stiffness = 3000;
 
 %%
 % Contact matrix K; The global stiffness matrix G;
@@ -274,7 +274,7 @@ end
 
 %Ground joint
 Joints.Fix.type   = 'Fix';  % fix body in the space
-Joints.Fix.body_1 = 'C1';   % body identidier
+Joints.Fix.body_1 = 'C1';   % body identifier
 
 % Multibody system information
 World.nbodies = length(BodyList);  % number of bodies in the system 
@@ -287,7 +287,7 @@ World.Msize   = World.NNodes*6+World.nbodies*6; % mass matrix size
 
 y_d=[];
 
-World.M=zeros(World.Msize); % Flexible body mass matrix aluccation
+World.M=zeros(World.Msize); % Flexible body mass matrix allocation
 
 count = 1;
 for indexE = 1:World.nbodies
@@ -343,15 +343,15 @@ end
             end
         end
 
-% set integration parametters
+% set integration parameters
 t0   = 0;    % Initial time
-t    = 100.00; % Final time
+t    = 0.06; % Final time
 step = 0.01; % Time-step
 
 
 tspan = [t0:step:t];
 
-% Set integrator and its parametters
+% Set integrator and its parameters
 
 fprintf('\n\n ODE45\n\n')
 tol = 1e-5;
@@ -464,7 +464,7 @@ legend('Points','Nodes')
 hold off
 
 %%
-% Graphic output: Node oscilation X-Y
+% Graphic output: Node oscillation X-Y
 
 fig=figure;
 for idx=1:World.nbodies
@@ -498,7 +498,7 @@ hold off
 
 
 %%
-% Graphic output: Node oscilation Y-Z
+% Graphic output: Node oscillation Y-Z
 
 fig=figure;
 for idx=1:World.nbodies
@@ -531,7 +531,7 @@ legend('Points','Nodes')
 hold off
 
 %%
-% Graphic output: Node oscilation X-Z
+% Graphic output: Node oscillation X-Z
 
 fig=figure;
 for idx=1:World.nbodies
@@ -615,8 +615,14 @@ figure;
 plot(T,Y(15,:),'r')
  
 figure;
-contour(Y(:,1:100))
+contour(Y(:,end-100:end))
 colorbar()
+xlabel('iteration-100'),ylabel('variation')
+
+figure
+plot(sum(Y'))
+xlabel('iteration'),ylabel('variation sum')
+
 
 %% Error on thr system constrains
 
@@ -632,4 +638,6 @@ plot(Pe)
 xlabel('iteration'),ylabel('Energy')
 
 hold off
-% save('Graph.mat','yT','ListaCorpos','Corpo');
+
+save('Graph.mat','yT','BodyList','Bodies','Simulation');
+

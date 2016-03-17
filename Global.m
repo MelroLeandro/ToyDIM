@@ -1,5 +1,5 @@
-function G = Global(v)
-% Autor: Carlos Leandro
+﻿function G = Global(v)
+% Author: Carlos Leandro
 % Data: 25Fev16
 % Version:
 

@@ -1,5 +1,5 @@
-function P = proj(n)
-% Autor: Carlos Leandro
+﻿function P = proj(n)
+% Author: Carlos Leandro
 % Data: 25Fev16
 % Version:
 

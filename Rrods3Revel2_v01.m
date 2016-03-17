@@ -1,4 +1,4 @@
-%-------------------------------------------------------------------------%
+﻿%-------------------------------------------------------------------------%
 %------------------------------Multibody Dynamic--------------------------%
 %------------------------------A toy system-------------------------------% 
 % Problem:  3 rods linked using two revolute joints 3D
@@ -16,7 +16,7 @@ global World % used to describe the world
 global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
 global Bodies % Structure with every rigid bodies in the system
-global Joints % Structure with dynamis constrains 
+global Joints % Structure with dynamics constrains 
 
 
 global TT Err Ke Pe
@@ -55,7 +55,7 @@ JointList={'Fix','J1','J2','J3'}; % list of dynamic constrains
 %Ground: body C1
 %Geometry
 
-Bodies.Ground.geo.m=1; % massa
+Bodies.Ground.geo.m=1; % mass
 Bodies.Ground.flexible=false;
 
 % Inertia tensor for body Ground
@@ -63,21 +63,21 @@ Bodies.Ground.geo.JP=diag([1,1,1]);
 
 % Points in body C1
 Bodies.Ground.PointsList={'P1'};
-Bodies.Ground.Points.P1.sPp=[0,0.5,0]'; % local frame coordenates
+Bodies.Ground.Points.P1.sPp=[0,0.5,0]'; % local frame coordinates
 
 % Vectors in body C1
 Bodies.Ground.VectorsList={'V1'};
-Bodies.Ground.Vectors.V1.sP=[1,0,0]'; % local frame coordenates
+Bodies.Ground.Vectors.V1.sP=[1,0,0]'; % local frame coordinates
 
 % Body initial values
-Bodies.Ground.r=[0,0.0,0]'; % Body initial position in global coordenates
+Bodies.Ground.r=[0,0.0,0]'; % Body initial position in global coordinates
 Bodies.Ground.r_d=[0,0,0]';  % initial velocity
 Bodies.Ground.r_dd=[0,0,0]';  % initial acceleration
-Bodies.Ground.p=[1,0,0,0]';  % initial euler parameters
-Bodies.Ground.p_d=[0,0,0,0]';% derivada dos parametros de Euler
+Bodies.Ground.p=[1,0,0,0]';  % initial Euler parameters
+Bodies.Ground.p_d=[0,0,0,0]';% Euler parameters derivative
 Bodies.Ground.w=[0,0,0]';    % initial angular velocity
-Bodies.Ground.wp=[0,0,0]';  % initial angular aceleration
-Bodies.Ground.np=[0,0,0]';   % initial momento
+Bodies.Ground.wp=[0,0,0]';  % initial angular acceleration
+Bodies.Ground.np=[0,0,0]';   % initial moment
 
 
 %Body C1 a Rod
@@ -183,10 +183,10 @@ Bodies.C3.np=[0,0,0]';
 %Ground joint
 
 Joints.Fix.type='Fix';  % fix body in the space
-Joints.Fix.body_1='Ground'; % body identidier
+Joints.Fix.body_1='Ground'; % body identifier
 
 %Sherical joint linking body C1 and body C2
-Joints.J1.type='Rev';  % sherical joint between body_1 and body_2
+Joints.J1.type='Rev';  % spherical joint between body_1 and body_2
 Joints.J1.body_1='Ground'; % body_1 identifier
 Joints.J1.body_2='C1'; % body_2 identifier
 Joints.J1.point='P1';  % point identifier
@@ -236,7 +236,7 @@ end
 %% 
 % Start simulation
 
-% set integration parametters
+% set integration parameters
 t0=0;    % Initial time
 t=100.00; % Final time
 step=0.001; % Time-step
@@ -244,7 +244,7 @@ step=0.001; % Time-step
 
 tspan = [t0:step:t];
 
-% Set integrator and its parametters
+% Set integrator and its parameters
 
 fprintf('\n\n ODE45\n\n')
 tol=1e-5;
@@ -279,9 +279,9 @@ xlabel('x'),ylabel('z')
 legend('position x','position z')
 % print(fig,'Position x z','-dpng')
 hold off
-% Velocidades
+
 fig=figure;
-for indexE=1:nbodies %ciclo for actua sobre todos os diferentes esferas
+for indexE=1:nbodies
     L=yT(:,(indexE-1)*13+8:(indexE-1)*13+10);
     v=[];
     for i=1:length(L)

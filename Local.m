@@ -1,5 +1,5 @@
-function L = Local(v)
-% Autor: Carlos Leandro
+﻿function L = Local(v)
+% Author: Carlos Leandro
 % Data: 25Fev16
 % Version:
 
