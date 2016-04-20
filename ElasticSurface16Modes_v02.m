@@ -1,4 +1,4 @@
-﻿%-------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %------------------------------Multibody Dynamic--------------------------%
 %------------------------------A toy system-------------------------------% 
 % Problem:  elastic rod defined using 3 nodes
@@ -17,7 +17,9 @@ global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
 global Bodies   % Structure with every rigid bodies in the system
 global Joints   % Structure with dynamics constrains 
-
+global Simulation
+global Motors
+global Motor
 
 global TT Err Ke Pe
 
@@ -28,6 +30,12 @@ global Simulation % simulation data
 % World parameters
 
 World.g=[0;0;0.0];       % force to be applied on each body in each iteration
+
+World.ElasticNet = false;  % force are generated using and elastic network
+World.Regularistion = true;
+World.RFactor = 1e-15;     % regularization factor
+World.FMNcontact = false;
+World.FMNdensity = false;
 
 % Contact
 World.n=1.5;
@@ -53,7 +61,7 @@ World.Flexible=true;
 
 BodyList={'C1'}; % list of system bodies
 JointList={'Fix'}; % list of dynamic constrains
-%JointList={};
+Motors={};
 
 NumBodies= length(BodyList);
 %%
@@ -232,10 +240,11 @@ Bodies.C1.r   = Bodies.C1.center_mass;
 Bodies.C1.r_d = [0,0,0]';    % initial velocity
 Bodies.C1.r_dd= [0,0,0]';    % initial acceleration
 Bodies.C1.p   = [1,0,0,0]';  % initial Euler parameters
-Bodies.C1.p_d = [0,0,0,0]';  % Euler parameters derivative
+Bodies.C1.p_d = [0,0,0,0]';  % Euler parameters derivative
 Bodies.C1.w   = [0,0,0]';    % initial angular velocity
 Bodies.C1.wp  = [0,0,0]';    % initial angular acceleration
 Bodies.C1.np  = [0,0,0]';    % initial moment
+Bodies.C1.exists=true;
 
 % Material properties
 Bodies.C1.stiffness = 10000;
@@ -251,6 +260,7 @@ Joints.Fix.body_1 = 'C1';   % body identifier
 % Multibody system information
 World.nbodies = length(BodyList);  % number of bodies in the system 
 World.njoints = length(JointList); % number of joints in the system
+World.nmotors = length(Motors); % number of motors in the system
 
 NNodes = 0; % count the total number of nodes in the all system
 
@@ -363,6 +373,8 @@ end
         for indexE = 1:World.nbodies
             BodyName=BodyList{indexE};
 
+            Bodies.(BodyName).forca=[];
+            
             for indexP=1:length(Bodies.(BodyName).PointsList)
                 pointname=Bodies.(BodyName).PointsList{indexP};
 

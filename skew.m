@@ -1,4 +1,4 @@
-﻿function sk = skew(v)
+function sk = skew(v)
 % Author: Carlos Leandro
 % Data: 25Fev16
 % Version:

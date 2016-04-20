@@ -1,4 +1,4 @@
-﻿%-------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %------------------------------Multibody Dynamic--------------------------%
 %------------------------------A toy system-------------------------------% 
 % Problem:  3 rods linked using two resolute joints 3D
@@ -232,7 +232,8 @@ Bodies.C1.r   = Bodies.C1.center_mass;
 Bodies.C1.r_d = [0,0,0]';  % initial velocity
 Bodies.C1.r_dd= [0,0,0]'; % initial acceleration
 Bodies.C1.p   = [1,0,0,0]';  % initial Euler parameters
-Bodies.C1.p_d = [0,0,0,0]';% Euler parameters derivative
+Bodies.C1.p_d = [0,0,0,0]';% Euler parameters
+ derivative
 Bodies.C1.w   = [0,0,0]';    % initial angular velocity
 Bodies.C1.wp  = [0,0,0]';   % initial angular acceleration
 Bodies.C1.np  = [0,0,0]';   % initial moment

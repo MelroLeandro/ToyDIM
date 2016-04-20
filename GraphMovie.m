@@ -1,4 +1,4 @@
-﻿function  GraphMovie( file)
+function  GraphMovie( file)
 %   Detailed explanation goes here
 %    Draw solution to the spheres packing problem
 %    arguments:

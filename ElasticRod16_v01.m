@@ -1,4 +1,4 @@
-﻿%-------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %------------------------------Multibody Dynamic--------------------------%
 %------------------------------A toy system-------------------------------% 
 % Problem:  3 rods linked using two evolute joints 3D
@@ -27,6 +27,11 @@ global Simulation % simulation data
 % World parameters
 
 World.g=[0;0;0.0];       % force to be applied on each body in each iteration
+World.ElasticNet = false;  % force are generated using and elastic network
+World.Regularistion = true;
+World.RFactor = 1e-15;     % regularization factor
+World.FMNcontact = false;
+World.FMNdensity = false;
 
 % Contact
 World.n=1.5;
@@ -212,6 +217,7 @@ Bodies.C1.p_d = [0,0,0,0]';% derivada dos parametros de Euler
 Bodies.C1.w   = [0,0,0]';    % initial angular velocity
 Bodies.C1.wp  = [0,0,0]';   % initial angular acceleration
 Bodies.C1.np  = [0,0,0]';   % initial moment
+Bodies.C1.exists=true;
 
 % Matrial properties
 Bodies.C1.stiffness = 3000;

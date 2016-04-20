@@ -1,4 +1,4 @@
-﻿%-------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %------------------------------Multibody Dynamic--------------------------%
 %------------------------------A toy system-------------------------------% 
 % Problem: 3 rods linked using two spherical joints 3D
@@ -17,7 +17,9 @@ global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
 global Bodies % Structure with every rigid bodies in the system
 global Joints % Structure with dynamics constrains 
-
+global Simulation
+global Motors
+global Motor
 
 global TT Err
 
@@ -25,7 +27,11 @@ global TT Err
 % World parameters
 
 World.gravity=[0;0;-0.00981]; % force to be applied on each body
-
+World.ElasticNet = false;  % force are generated using and elastic network
+World.Regularistion = true;
+World.RFactor = 1e-15;     % regularization factor
+World.FMNcontact = false;
+World.FMNdensity = false;
 
 % Baumgarte Method
 World.alpha=5.0;
@@ -45,12 +51,14 @@ World.Flexible=false;
 
 BodyList={'Ground','C1','C2','C3'}; % list of system bodies
 JointList={'Fix','J1','J2','J3'}; % list of dynamic constrains
+Motors={};
 
 %Ground: body C1
 %Geometry
 
 Bodies.Ground.geo.m=1; % massa
 Bodies.Ground.flexible=false;
+
 
 Bodies.Ground.geo.JP=diag([1,1,1]); % Moment of inertia
 
@@ -66,10 +74,11 @@ Bodies.Ground.r=[0,0.0,0]'; % Body initial position in global coordinates
 Bodies.Ground.r_d=[0,0,0]';  % initial velocity
 Bodies.Ground.r_dd=[0,0,0]';  % initial acceleration
 Bodies.Ground.p=[1,0,0,0]';  % initial Euler parameters
-Bodies.Ground.p_d=[0,0,0,0]';% Euler parameters derivative
+Bodies.Ground.p_d=[0,0,0,0]';% Euler parameters derivative
 Bodies.Ground.w=[0,0,0]';    % initial angular velocity
 Bodies.Ground.wp=[0,0,0]';  % initial angular acceleration
 Bodies.Ground.np=[0,0,0]';   % initial moment
+Bodies.Ground.exists=true;
 
 %Body C1 a Rod
 %%Geometry
@@ -100,7 +109,7 @@ Bodies.C1.p_d=[0,0,0,0]';
 Bodies.C1.w=[0,0,0]'; 
 Bodies.C1.wp=[0,0,0]'; 
 Bodies.C1.np=[0,0,0]';
-
+Bodies.C1.exists=true;
 
 %Body C2 a Rod
 %%Geometry
@@ -131,7 +140,7 @@ Bodies.C2.p_d=[0,0,0,0]';
 Bodies.C2.w=[0,0,0]'; 
 Bodies.C2.wp=[0,0,0]'; 
 Bodies.C2.np=[0,0,0]';
-
+Bodies.C2.exists=true;
 
 %Body C3 a Rod
 %%Geometry
@@ -161,6 +170,7 @@ Bodies.C3.p_d=[0,0,0,0]';
 Bodies.C3.w=[0,0,0]'; 
 Bodies.C3.wp=[0,0,0]'; 
 Bodies.C3.np=[0,0,0]';
+Bodies.C3.exists=true;
 
 %%
 % System dynamic constrains
@@ -192,6 +202,7 @@ Joints.J3.point='P3';  % point identifier
 
 World.nbodies = length(BodyList);  % number of bodies in the system 
 World.njoints = length(JointList); % number of joints in the system
+World.nmotors = length(Motors); % number of joints in the system
 World.NNodes  = 0 ;            % count number of nodes in the system
 World.Msize   = World.NNodes*6+World.nbodies*6; % mass matrix size
 
@@ -210,7 +221,7 @@ for indexE=1:nbodies
     index=(indexE-1)*6+1;
     
     Bodies.(BodyName).index=index; % body index in the mass matrix
-    
+    Bodies.(BodyName).forca=[];
     % recursive definition for the initial force
     y_d=[y_d; Bodies.(BodyName).r;Bodies.(BodyName).p;Bodies.(BodyName).r_d;Bodies.(BodyName).w];
 end

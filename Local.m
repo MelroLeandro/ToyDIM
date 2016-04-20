@@ -1,4 +1,4 @@
-﻿function L = Local(v)
+function L = Local(v)
 % Author: Carlos Leandro
 % Data: 25Fev16
 % Version:

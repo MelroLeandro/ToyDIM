@@ -1,4 +1,4 @@
-﻿function u_d=updateaccel(t,y)
+function u_d=updateaccel(t,y)
 %Function that writes q for the fourth project
 %   
 
@@ -7,6 +7,8 @@ global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
 global Bodies % Structure with every rigid bodies in the system
 global Joints % Structure with dynamics constrains
+global Motors
+global Motor
 
 global Simulation
 
@@ -15,7 +17,7 @@ global TT
 % y=[r;p;r_d;wP];
 nbodies=World.nbodies; % number of bodies in the system 
 njoints=World.njoints; % number of joints in the system
-
+nmotors=World.nmotors; % number of motors in the system
 
 count = 1;
 
@@ -34,10 +36,14 @@ for indexE=1:nbodies
     count = count+13;
     
     Bodies.(BodyName).n=[0;0;0];
+    Bodies.(BodyName).f=[0;0;0];
+    Bodies.(BodyName).Tf=[0;0;0];
     
-    if  Bodies.(BodyName).flexible
+    
+    if  Bodies.(BodyName).flexible 
               
         for  index1=1:Bodies.(BodyName).NumberNodes
+           %Pic(Bodies.(BodyName),BodyName,indexE);
            NodeName=Bodies.(BodyName).NodeList(index1,:);
            
            Bodies.(BodyName).node.(NodeName).deltaP   = y(count  :count+2 );  % equilibrium positions
@@ -56,7 +62,9 @@ for indexE=1:nbodies
         Bodies.(BodyName).f= Bodies.(BodyName).g;
         
     else
-        Bodies.(BodyName).f= Bodies.(BodyName).g;
+        if Bodies.(BodyName).exists
+            Bodies.(BodyName).f= Bodies.(BodyName).g;
+        end
     end    
 end
 
@@ -120,7 +128,40 @@ for indexE=1:nbodies
         end
     else
         Ke = Ke+Bodies.(BodyName).geo.m*Bodies.(BodyName).r_d'*Bodies.(BodyName).r_d;
-    end     
+    end 
+    
+    % Update forces
+    if  World.FMNcontact % update forces using FMNcontact
+        if Bodies.(BodyName).contact
+            Bodies.(BodyName).delta=0;                                                                                                                                        
+            Pic(Bodies.(BodyName),BodyName,indexE,t);
+            Bodies.(BodyName).f=Bodies.(BodyName).f+Bodies.(BodyName).Tf;
+            for indexF=1:indexE-1 
+                BodyNameB=BodyList{indexF};
+                Bodies.(BodyNameB).f=Bodies.(BodyNameB).f+Bodies.(BodyNameB).Tf;
+                Bodies.(BodyNameB).Tf=[0;0;0];
+            end
+            %norm(Bodies.(BodyName).f)
+        end
+    end
+    if  World.FMNdensity % update forces using FMNdensity
+        if Bodies.(BodyName).contact
+            Bodies.(BodyName).delta=0;                                                                                                                                        
+            Pic(Bodies.(BodyName));
+        end
+    end
+    
+    Bodies.(BodyName).forca=[ Bodies.(BodyName).forca norm(Bodies.(BodyName).f)];
+end
+
+for indexB=1:nmotors
+    MotorName=Motors{indexB};
+    BodyName=Motor.(MotorName).body;
+    P=Motor.(MotorName).Point;
+    p=Bodies.(BodyName).Points.(P).sPp;
+    f=Motor.(MotorName).force;
+    
+    Bodies.(BodyName).f=Bodies.(BodyName).f+Bodies.(BodyName).A*(p+f);
 end
 
 % Save Energy
@@ -130,9 +171,9 @@ World.Pe = 0.25*Pe;% potencial energy
    
 % Inersia tensor Update
 
-g=zeros(World.Msize,1);      % external forces
-s=zeros(World.Msize,1);      % quadratic velocity term
-q=zeros(World.Msize,1);  % body velocities
+g=zeros(World.Msize,1);    % external forces
+s=zeros(World.Msize,1);    % quadratic velocity term
+q=zeros(World.Msize,1);    % body velocities
 q_d=zeros(World.Msize,1);  % body velocities
 
 for indexE=1:nbodies 
@@ -260,6 +301,16 @@ if njoints > 0
 
             nlines=nlines+6;
         end
+        
+        if strcmp(Joints.(Jointname).type, 'FixSlide')
+            Joints.(Jointname).constr=zeros(5,1);
+            Joints.(Jointname).Di=[1 0 0 0 0 0; 0 0 1 0 0 0; 0 0 0 1 0 0; 0 0 0 0 1 0; 0 0 0 0 0 1];
+            Joints.(Jointname).f=zeros(5,1);
+
+            Joints.(Jointname).numlin=5;
+
+            nlines=nlines+5;
+        end
 
         % Spherical Joint linking two rigid bodies 
         if strcmp(Joints.(Jointname).type, 'She')
@@ -335,12 +386,219 @@ if njoints > 0
 
             nlines=nlines+6;
 
-        end    
+        end
+        
+        % Revolute joint linking two rigid bodies
+        if strcmp(Joints.(Jointname).type, 'Rev2')
+
+            C1=Joints.(Jointname).body_1;
+            C2=Joints.(Jointname).body_2;
+            P1=Joints.(Jointname).point;
+            V1=Joints.(Jointname).vector1;
+            V11=Joints.(Jointname).vector11;
+            V12=Joints.(Jointname).vector12;
+
+            c1=Bodies.(C2).Points.(P1).rP-Bodies.(C1).Points.(P1).rP; 
+            c2=Bodies.(C1).Vectors.(V1).s'*Bodies.(C2).Vectors.(V11).s;
+            c3=Bodies.(C1).Vectors.(V1).s'*Bodies.(C2).Vectors.(V12).s;
+
+            Joints.(Jointname).constr=([c1;c2;c3]); %
+
+            Qri1=-eye(3,3);
+            Qpi1=skew(Bodies.(C1).Points.(P1).sP)*Bodies.(C1).A;
+            Qrj1=eye(3,3);
+            Qpj1=-skew(Bodies.(C2).Points.(P1).sP)*Bodies.(C2).A;
+
+            Di1=[Qri1,Qpi1];
+            Dj1=[Qrj1,Qpj1]; 
+
+            Qri2=zeros(1,3);
+            Qpi2=Bodies.(C2).Vectors.(V11).s'*skew(Bodies.(C1).Vectors.(V1).s)*Bodies.(C1).A;
+            Qrj2=zeros(1,3);
+            Qpj2=-Bodies.(C1).Vectors.(V1).s'*skew(Bodies.(C2).Vectors.(V11).s)*Bodies.(C2).A;
+
+
+            Di2=[Qri2,Qpi2]; 
+            Dj2=[Qrj2,Qpj2]; 
+
+            Qri3=zeros(1,3);
+            Qpi3=Bodies.(C2).Vectors.(V12).s'*skew(Bodies.(C1).Vectors.(V1).s)*Bodies.(C1).A;
+            Qrj3=zeros(1,3);
+            Qpj3=-Bodies.(C1).Vectors.(V1).s'*skew(Bodies.(C2).Vectors.(V12).s)*Bodies.(C2).A;
+
+
+            Di3=[Qri3,Qpi3]; 
+            Dj3=[Qrj3,Qpj3];
+            
+            Joints.(Jointname).Di=[Di1;Di2;Di3];
+            Joints.(Jointname).Dj=[Dj1;Dj2;Dj3];
+
+            f1=skew(Bodies.(C1).w)*Bodies.(C1).Points.(P1).sP_d...
+            -skew(Bodies.(C2).w)*Bodies.(C2).Points.(P1).sP_d;
+
+            f2=-2*Bodies.(C1).Vectors.(V1).s_d'*Bodies.(C2).Vectors.(V11).s_d...
+            +Bodies.(C2).Vectors.(V11).s'*skew(Bodies.(C1).w)*Bodies.(C1).Vectors.(V1).s_d...
+            -Bodies.(C1).Vectors.(V1).s'*skew(Bodies.(C2).w)*Bodies.(C2).Vectors.(V11).s_d;
+
+            f3=-2*Bodies.(C1).Vectors.(V1).s_d'*Bodies.(C2).Vectors.(V12).s_d...
+            +Bodies.(C2).Vectors.(V12).s'*skew(Bodies.(C1).w)*Bodies.(C1).Vectors.(V1).s_d...
+            -Bodies.(C1).Vectors.(V1).s'*skew(Bodies.(C2).w)*Bodies.(C2).Vectors.(V12).s_d;
+        
+            Joints.(Jointname).f=[f1;f2;f3];
+            Joints.(Jointname).numlin=5;
+
+            nlines=nlines+5;
+
+        end
+        
+        % prismatic joint linking two rigid bodies
+        if strcmp(Joints.(Jointname).type, 'Prism')
+
+            C1=Joints.(Jointname).body_1;
+            C2=Joints.(Jointname).body_2;
+%             P=Joints.(Jointname).P; % point in body C1 and on the line translation
+%             Q=Joints.(Jointname).Q; % point in body C2 and on the line translation
+%             B=P; % point on boud bodies
+%             s1=Joints.(Jointname).s1; % in the line of translation
+%             s2=Joints.(Jointname).s2;
+%             h1=Joints.(Jointname).h1; % normal to the line of translation
+%             h2=Joints.(Jointname).h2;
+            h1=Joints.(Jointname).s1;
+            h2=Joints.(Jointname).s2;
+            h3=Joints.(Jointname).s3;
+
+%            d=Bodies.(C2).Points.(Q).rP-Bodies.(C1).Points.(P).rP;
+%            d_d=Bodies.(C2).Points.(Q).rP_d-Bodies.(C1).Points.(P).rP_d;
+            
+            
+            %Phi(p1,2)
+            %c1=skew(Bodies.(C1).Vectors.(s1).s)*Bodies.(C2).Vectors.(s2).s;
+            %Phi(p2,2)
+            %c2=Bodies.(C1).Vectors.(s1).s'*d;
+            %Phi(n1,1)
+            c1=Bodies.(C1).Vectors.(h1).s'*Bodies.(C2).Vectors.(h2).s;
+            c2=Bodies.(C1).Vectors.(h1).s'*Bodies.(C2).Vectors.(h3).s;
+            c3=Bodies.(C2).Vectors.(h1).s'*Bodies.(C1).Vectors.(h2).s;
+            c4=Bodies.(C2).Vectors.(h1).s'*Bodies.(C1).Vectors.(h3).s;
+            c5=Bodies.(C1).Vectors.(h2).s'*Bodies.(C2).Vectors.(h3).s;
+
+            %Joints.(Jointname).constr=([c1;c2;c3]); %
+            Joints.(Jointname).constr=([c1;c2;c3;c4]);%;c5]); %
+            %Phi(p1,2)
+%             Qri1=zeros(3,3);
+%             Qpi1=skew(Bodies.(C2).Vectors.(s2).s)*skew(Bodies.(C1).Vectors.(s1).s)*Bodies.(C1).A;
+%             Qrj1=zeros(3,3);
+%             Qpj1=-skew(Bodies.(C1).Vectors.(s1).s)*skew(Bodies.(C2).Vectors.(s2).s)*Bodies.(C2).A;
+%             
+%             Di1=[Qri1,Qpi1]; 
+%             Dj1=[Qrj1,Qpj1];
+%             
+%             %Phi(p2,2)
+%             Qri2=-Bodies.(C1).Vectors.(s1).s';
+%             Qpi2=(d+Bodies.(C1).Points.(B).rP)'*skew(Bodies.(C1).Vectors.(s1).s)*Bodies.(C1).A;
+%             Qrj2=Bodies.(C1).Vectors.(s1).s';
+%             Qpj2=-Bodies.(C1).Vectors.(s1).s'*skew(Bodies.(C1).Points.(B).rP)*Bodies.(C2).A;
+% 
+%             Di2=[Qri2,Qpi2]; 
+%             Dj2=[Qrj2,Qpj2];
+            
+            %Phi(n1,1)
+            
+            %c1=Bodies.(C1).Vectors.(h1).s'*Bodies.(C2).Vectors.(h2).s;
+            Qri1=zeros(1,3);
+            Qpi1=Bodies.(C2).Vectors.(h2).s'*skew(Bodies.(C1).Vectors.(h1).s)*Bodies.(C1).A;
+            Qrj1=zeros(1,3);
+            Qpj1=-Bodies.(C1).Vectors.(h1).s'*skew(Bodies.(C2).Vectors.(h2).s)*Bodies.(C2).A;
+            Di1=[Qri1,Qpi1]; 
+            Dj1=[Qrj1,Qpj1];
+            
+            %c2=Bodies.(C1).Vectors.(h1).s'*Bodies.(C2).Vectors.(h3).s;
+            Qri2=zeros(1,3);
+            Qpi2=Bodies.(C2).Vectors.(h3).s'*skew(Bodies.(C1).Vectors.(h1).s)*Bodies.(C1).A;
+            Qrj2=zeros(1,3);
+            Qpj2=-Bodies.(C1).Vectors.(h1).s'*skew(Bodies.(C2).Vectors.(h3).s)*Bodies.(C2).A;
+            Di2=[Qri2,Qpi2]; 
+            Dj2=[Qrj2,Qpj2];            
+            
+            
+            %c3=Bodies.(C2).Vectors.(h1).s'*Bodies.(C1).Vectors.(h2).s;
+            Qri3=zeros(1,3);
+            Qpi3=Bodies.(C2).Vectors.(h1).s'*skew(Bodies.(C1).Vectors.(h2).s)*Bodies.(C1).A;
+            Qrj3=zeros(1,3);
+            Qpj3=-Bodies.(C1).Vectors.(h2).s'*skew(Bodies.(C2).Vectors.(h1).s)*Bodies.(C2).A;
+            Di3=[Qri3,Qpi3]; 
+            Dj3=[Qrj3,Qpj3];
+            
+            
+            %c4=Bodies.(C2).Vectors.(h1).s'*Bodies.(C1).Vectors.(h3).s;
+            Qri4=zeros(1,3);
+            Qpi4=Bodies.(C2).Vectors.(h1).s'*skew(Bodies.(C1).Vectors.(h3).s)*Bodies.(C1).A;
+            Qrj4=zeros(1,3);
+            Qpj4=-Bodies.(C1).Vectors.(h3).s'*skew(Bodies.(C2).Vectors.(h1).s)*Bodies.(C2).A;
+            Di4=[Qri4,Qpi4]; 
+            Dj4=[Qrj4,Qpj4];            
+            
+            %c5=Bodies.(C1).Vectors.(h2).s'*Bodies.(C2).Vectors.(h3).s;
+            
+            Qri5=zeros(1,3);
+            Qpi5=Bodies.(C2).Vectors.(h3).s'*skew(Bodies.(C1).Vectors.(h2).s)*Bodies.(C1).A;
+            Qrj5=zeros(1,3);
+            Qpj5=-Bodies.(C1).Vectors.(h2).s'*skew(Bodies.(C2).Vectors.(h3).s)*Bodies.(C2).A;
+            Di5=[Qri5,Qpi5]; 
+            Dj5=[Qrj5,Qpj5]; 
+
+            Joints.(Jointname).Di=[Di1;Di2;Di3;Di4];%;Di5];
+            Joints.(Jointname).Dj=[Dj1;Dj2;Dj3;Dj4];%;Dj5];
+            
+%             %Phi(p1,2)
+%             f1=-2*skew(Bodies.(C1).Vectors.(s1).s_d)*Bodies.(C2).Vectors.(s2).s_d...
+%             +skew(Bodies.(C2).Vectors.(s2).s)*skew(Bodies.(C1).w)*Bodies.(C1).Vectors.(s1).s_d...
+%             -skew(Bodies.(C1).Vectors.(s1).s)*skew(Bodies.(C2).w)*Bodies.(C2).Vectors.(s2).s_d;
+% 
+%             %Phi(p2,2)
+%             f2=-2*d_d'*Bodies.(C1).Vectors.(s1).s_d...
+%             -d'*skew(Bodies.(C1).w)*Bodies.(C1).Vectors.(s1).s_d...
+%             +Bodies.(C1).Vectors.(s1).s'*(skew(Bodies.(C1).w)*Bodies.(C1).Points.(B).sP_d-skew(Bodies.(C2).w)*Bodies.(C2).Points.(B).sP_d);
+        
+            %Phi(n1,1)
+            %c1=Bodies.(C1).Vectors.(h1).s'*Bodies.(C2).Vectors.(h2).s;
+            f1=-2*Bodies.(C1).Vectors.(h1).s_d'*Bodies.(C2).Vectors.(h2).s_d...
+            +Bodies.(C1).Vectors.(h1).s_d'*skew(Bodies.(C1).w)*Bodies.(C2).Vectors.(h2).s...
+            +Bodies.(C2).Vectors.(h2).s_d'*skew(Bodies.(C2).w)*Bodies.(C1).Vectors.(h1).s;
+        
+            %c2=Bodies.(C1).Vectors.(h1).s'*Bodies.(C2).Vectors.(h3).s;
+            f2=-2*Bodies.(C1).Vectors.(h1).s_d'*Bodies.(C2).Vectors.(h3).s_d...
+            +Bodies.(C1).Vectors.(h1).s_d'*skew(Bodies.(C1).w)*Bodies.(C2).Vectors.(h3).s...
+            +Bodies.(C2).Vectors.(h3).s_d'*skew(Bodies.(C2).w)*Bodies.(C1).Vectors.(h1).s;
+        
+            %c3=Bodies.(C2).Vectors.(h1).s'*Bodies.(C1).Vectors.(h2).s;
+            f3=-2*Bodies.(C1).Vectors.(h2).s_d'*Bodies.(C2).Vectors.(h1).s_d...
+            +Bodies.(C1).Vectors.(h2).s_d'*skew(Bodies.(C1).w)*Bodies.(C2).Vectors.(h1).s...
+            +Bodies.(C2).Vectors.(h1).s_d'*skew(Bodies.(C2).w)*Bodies.(C1).Vectors.(h2).s;            
+            
+            %c4=Bodies.(C2).Vectors.(h1).s'*Bodies.(C1).Vectors.(h3).s;
+            f4=-2*Bodies.(C1).Vectors.(h3).s_d'*Bodies.(C2).Vectors.(h1).s_d...
+            +Bodies.(C1).Vectors.(h3).s_d'*skew(Bodies.(C1).w)*Bodies.(C2).Vectors.(h1).s...
+            +Bodies.(C2).Vectors.(h1).s_d'*skew(Bodies.(C2).w)*Bodies.(C1).Vectors.(h3).s;
+        
+            %c5=Bodies.(C1).Vectors.(h2).s'*Bodies.(C2).Vectors.(h1).s;
+            
+            f5=-2*Bodies.(C1).Vectors.(h2).s_d'*Bodies.(C2).Vectors.(h1).s_d...
+            +Bodies.(C1).Vectors.(h2).s_d'*skew(Bodies.(C1).w)*Bodies.(C2).Vectors.(h1).s...
+            +Bodies.(C2).Vectors.(h1).s_d'*skew(Bodies.(C2).w)*Bodies.(C1).Vectors.(h2).s;            
+
+            Joints.(Jointname).f=[f1;f2;f3;f4];%;f5];
+            Joints.(Jointname).numlin=4;
+
+
+            nlines=nlines+4;
+
+        end 
     end
 
     % Jacobian
     D=zeros(nlines,World.Msize);
-    
+World.D=D;
     Phi=zeros(nlines,1);
 
     cont=1;
@@ -349,7 +607,7 @@ if njoints > 0
 
         D(cont:cont+Joints.(Jointname).numlin-1,...
             Bodies.(Joints.(Jointname).body_1).index:Bodies.(Joints.(Jointname).body_1).index+5)=Joints.(Jointname).Di;
-        if ~strcmp(Joints.(Jointname).type, 'Fix')
+        if ~strcmp(Joints.(Jointname).type, 'Fix') && ~strcmp(Joints.(Jointname).type, 'FixSlide')
             D(cont:cont+Joints.(Jointname).numlin-1,...
                 Bodies.(Joints.(Jointname).body_2).index:Bodies.(Joints.(Jointname).body_2).index+5)=Joints.(Jointname).Dj;
         end
@@ -404,10 +662,12 @@ else
     end
 end
 
-%q_d=World.Z\World.F;
-
-Msis=World.Z'*World.Z;
-q_d=(1e-15*eye(size(Msis))+Msis)\World.Z'*World.F;
+if World.Regularistion
+    Msis=World.Z'*World.Z;
+    q_d=(World.RFactor*eye(size(Msis))+Msis)\World.Z'*World.F;
+else
+    q_d=World.Z\World.F;
+end
 
 u_d=[];
 

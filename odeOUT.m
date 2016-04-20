@@ -1,4 +1,4 @@
-﻿function Output = odeOUT(t,y,flag,varargin)
+function Output = odeOUT(t,y,flag,varargin)
 %odeOUT  Time series ODE output function.
 % Author: Carlos Leandro
 % Data: 25Fev16
@@ -19,7 +19,8 @@ if nargin < 3 || isempty(flag)
     World.Err=[];
     for indexE = 1:World.nbodies
         BodyName=BodyList{indexE};
-
+        Simulation.(BodyName).vel=[Simulation.(BodyName).vel Bodies.(BodyName).r_d];
+        Simulation.(BodyName).acc=[Simulation.(BodyName).acc Bodies.(BodyName).r_dd];
         for indexP=1:length(Bodies.(BodyName).PointsList)
             pointname=Bodies.(BodyName).PointsList{indexP};
 
@@ -45,7 +46,10 @@ else
         
         for indexE = 1:World.nbodies
             BodyName=BodyList{indexE};
-            Simulation.(BodyName).u_d=[];
+            %Simulation.(BodyName).u_d=[];
+            Simulation.(BodyName).vel=[];
+            Simulation.(BodyName).acc=[];
+        
             for indexP=1:length(Bodies.(BodyName).PointsList)
                 pointname=Bodies.(BodyName).PointsList{indexP};
 
