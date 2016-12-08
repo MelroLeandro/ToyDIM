@@ -10,9 +10,7 @@ global Joints % Structure with dynamics constrains
 global Motors
 global Motor
 
-global Simulation
 
-global TT
 
 % y=[r;p;r_d;wP];
 nbodies=World.nbodies; % number of bodies in the system 
@@ -131,6 +129,22 @@ for indexE=1:nbodies
     end 
     
     % Update forces
+    if World.ElasticNet
+        
+        Bodies.(BodyName).f=[0;0;0];
+        
+        rA=Bodies.(BodyName).r; 
+        for indexF =1:Bodies.(BodyName).num
+            BodyNameB=Bodies.(BodyName).Nei{indexF};
+            stiff = Bodies.(BodyName).stiffness(indexF);
+            len2  = Bodies.(BodyName).lengths(indexF);
+            rB=Bodies.(BodyNameB).r;
+            d=rB-rA;
+            dis=d'*d;
+            Bodies.(BodyName).f= Bodies.(BodyName).f+feval(World.potential,dis-len2,stiff)*(d./sqrt(dis));
+        end
+    end
+    
     if  World.FMNcontact % update forces using FMNcontact
         if Bodies.(BodyName).contact
             Bodies.(BodyName).delta=0;                                                                                                                                        
@@ -367,6 +381,8 @@ if njoints > 0
             Qrj2=zeros(3,3);
             Qpj2=-skew(Bodies.(C1).Vectors.(V1).s)*skew(Bodies.(C2).Vectors.(V1).s)*Bodies.(C2).A;
 
+           regist(Bodies.(C2).Vectors.(V1).s,Bodies.(C1).Vectors.(V1).s,Bodies.(C1).A,Qpi2)
+           regist(Bodies.(C1).Vectors.(V1).s,Bodies.(C2).Vectors.(V1).s,Bodies.(C2).A,Qpj2)
 
             Di2=[Qri2,Qpi2]; 
             Dj2=[Qrj2,Qpj2]; 
@@ -383,6 +399,8 @@ if njoints > 0
 
             Joints.(Jointname).f=[f1;f2];
             Joints.(Jointname).numlin=6;
+            
+            
 
             nlines=nlines+6;
 
@@ -645,9 +663,7 @@ World.D=D;
     World.Z=[World.M,D';D,zeros(World.size,World.size)];
     
     if World.Flexible
-        %World.F=[World.g+World.s-Bodies.C1.G*World.q;World.gamma]; % Buggy.....
         World.F=[World.g+World.s-Bodies.C1.G*World.q;World.gamma];
-        %World.F=[World.g;World.gamma];
         
     else
         World.F=[World.g;World.gamma]; 

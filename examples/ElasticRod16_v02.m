@@ -12,19 +12,19 @@ clear all
 % Global variables used to 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+addpath('./dynamic')
+
 global World    % used to describe the world 
 global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
 global Bodies   % Structure with every rigid bodies in the system
 global Joints   % Structure with dynamics constrains 
-global Simulation
+global Simulation % simulation data
 global Motors
 global Motor
 
 global TT Err Ke Pe
 
-
-global Simulation % simulation data
 
 %%
 % World parameters
@@ -70,22 +70,22 @@ bodyName='C1';
 Bodies.(bodyName).flexible=true;
 
 % Body fixed frames: implicitly included by removing the nodal coordinates
-Bodies.(bodyName).FixedFrameNodeOrder=[1]; % nodes order in finite element discrition
-Bodies.(bodyName).NumFixedFrameNodes=1;    % number of fixed nodes
+Bodies.(bodyName).FixedFrameNodeOrder=[1,16]; % nodes order in finite element discrition
+Bodies.(bodyName).NumFixedFrameNodes=2;    % number of fixed nodes
 
 count=1; 
 countd=1;
 
-for i=1:16
+for i=1:4
         
-        node=sprintf('C%dC',100+i);  
+        node =sprintf('C%dC',100+i  );  
         nodeB=sprintf('C%dC',100+i-1);
         nodeA=sprintf('C%dC',100+i+1);
         
         %
         % System topology
 
-        if i>1 && i<16
+        if i>1 && i<4
             Bodies.(bodyName).node.(node).Nei={nodeA,nodeB};
             Bodies.(bodyName).node.(node).num=2;
         elseif i==1
@@ -110,8 +110,9 @@ for i=1:16
         Bodies.(bodyName).node.(node).m=0.001;      % node mass
         Bodies.(bodyName).node.(node).mu=0.001;      % local rot inertia
         Bodies.(bodyName).node.(node).charge=0; % node change
-        Bodies.(bodyName).node.(node).x=[0.0,0.0,i*0.5]';  % initial global positions
-        Bodies.(bodyName).node.(node).deltaP=[0.0,0.1*i,0.0]';
+        Bodies.(bodyName).node.(node).x=[0.0,0.0,i]';  % initial global positions
+        Bodies.(bodyName).node.(node).deltaP=[0.0,0.0,0.0]';
+%        Bodies.(bodyName).node.(node).deltaP=[0.0,0.1*i,0.0]';
 %         if i==16
 %             Bodies.(bodyName).node.(node).deltaP=[0,0.1,0.01]';  % relative displacement
 %         else
@@ -220,6 +221,7 @@ Bodies.C1.p_d = [0,0,0,0]';  % Euler parameters
 Bodies.C1.w   = [0,0,0]';    % initial angular velocity
 Bodies.C1.wp  = [0,0,0]';    % initial angular acceleration
 Bodies.C1.np  = [0,0,0]';    % initial moment
+
 Bodies.C1.exists=true;
 
 % Matrial properties
@@ -287,6 +289,7 @@ for indexE = 1:World.nbodies
                count = count+6;
                Bodies.(bodyName).node.(NodeName).y_index=index;
            end
+           
         end
     end % have a flexible part
 end
@@ -321,7 +324,7 @@ for idx=1:length(BodyList)
                 for idx2=1:Bodies.(bodyName).node.(NodeName).num
                     NodeName2=Bodies.(bodyName).node.(NodeName).Nei{idx2};
                     delta_j = Bodies.(bodyName).node.(NodeName2).xP; % equilibrium positions
-                    omega_j = Bodies.(bodyName).node.(NodeName2).w; % equilibrium orientation
+                    omega_j = Bodies.(bodyName).node.(NodeName2).w;  % equilibrium orientation
 
                     dr = delta_i-delta_j;
                     dp = omega_i-omega_j;
@@ -367,7 +370,7 @@ end
 
 % set integration parameters
 t0   = 0;    % Initial time
-t    = 300.00; % Final time
+t    = 100.00; % Final time
 step = 0.001; % Time-step
 
 
@@ -416,6 +419,7 @@ legend('Points','Nodes')
 % print(fig,'Position y z','-dpng')
 hold off
 
+klkl
 %%
 % Graphic output: X-Z
 

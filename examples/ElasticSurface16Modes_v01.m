@@ -12,6 +12,8 @@ clear all
 % Global variables used to 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+addpath('./dynamic')
+
 global World    % used to describe the world 
 global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers

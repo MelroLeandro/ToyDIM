@@ -275,7 +275,7 @@ end
 
 % set integration parameters
 t0=0;    % Initial time
-t=200.00; % Final time
+t=20.00; % Final time
 step=0.001; % Time-step
 
 

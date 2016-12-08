@@ -12,6 +12,8 @@ clear all
 % Glabal variables used to 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+addpath('./dynamic')
+
 global World % used to describe the world 
 global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
@@ -24,6 +26,8 @@ global Motor
 
 global TT Err Ke Pe
 
+%% ["v11","v12","v13","v21","v22","v23","r11","r12","r13","r21","r22","r23","r31","r32","r33","q11","q12","q13","q21","q22","q23","q31","q32","q33"];
+World.V=[]
 %%
 % World parameters
 
@@ -267,6 +271,9 @@ options=odeset('RelTol',tol,'Stats','on','OutputFcn',@odeOUT);
 tic
 [T, yT]= ode45(@updateaccel, tspan, y_d, options);
 timeode45=toc
+
+
+csvwrite('dataSetrev.csv',World.V)
 
 %%
 % Graphic output

@@ -19,6 +19,7 @@ if nargin < 3 || isempty(flag)
     World.Err=[];
     for indexE = 1:World.nbodies
         BodyName=BodyList{indexE};
+        Simulation.(BodyName).r=[Simulation.(BodyName).r Bodies.(BodyName).r];
         Simulation.(BodyName).vel=[Simulation.(BodyName).vel Bodies.(BodyName).r_d];
         Simulation.(BodyName).acc=[Simulation.(BodyName).acc Bodies.(BodyName).r_dd];
         for indexP=1:length(Bodies.(BodyName).PointsList)
@@ -46,7 +47,7 @@ else
         
         for indexE = 1:World.nbodies
             BodyName=BodyList{indexE};
-            %Simulation.(BodyName).u_d=[];
+            Simulation.(BodyName).r=[];
             Simulation.(BodyName).vel=[];
             Simulation.(BodyName).acc=[];
         

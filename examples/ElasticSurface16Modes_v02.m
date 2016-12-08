@@ -12,19 +12,19 @@ clear all
 % Global variables used to 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+addpath('./dynamic')
+
 global World    % used to describe the world 
 global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
 global Bodies   % Structure with every rigid bodies in the system
 global Joints   % Structure with dynamics constrains 
-global Simulation
+global Simulation % simulation data
 global Motors
 global Motor
 
 global TT Err Ke Pe
 
-
-global Simulation % simulation data
 
 %%
 % World parameters

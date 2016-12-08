@@ -51,27 +51,50 @@ axis equal;
 
     i=1;
     
+    
     for indexE=1:World.nbodies 
         BodyName=BodyList{indexE};
         
-        
-        for  index1 = 1:Bodies.(BodyName).NumberNodes
-            
-            NodeName = Bodies.(BodyName).NodeList(index1,:);
+        if World.ElasticNet
 
-            R = Simulation.(BodyName).(NodeName)(:,1);
-           
-            Sx=R(1);
-            Sy=R(3);
-            Sz=R(2);
+                num_frames=length(Simulation.(BodyName).r(1,:));
+                
+                R = Simulation.(BodyName).r(:,1);
 
-            r=.1;
-            
-            s(i)=surf(r*x+Sx,r*y+Sy,r*z+Sz);  % sphere centered at (x,y,z)
-            set(s(i),'EdgeColor','none');
-            set(s(i),'FaceLighting','phong','FaceColor','interp','AmbientStrength',0.1);
-            
-            i=i+1;
+                Sx=R(1);
+                Sy=R(3);
+                Sz=R(2);
+
+                r=.1;
+
+                s(i)=surf(r*x+Sx,r*y+Sy,r*z+Sz);  % sphere centered at (x,y,z)
+                set(s(i),'EdgeColor','none');
+                set(s(i),'FaceLighting','phong','FaceColor','interp','AmbientStrength',0.1);
+
+                i=i+1;
+                
+               
+        else
+            for  index1 = 1:Bodies.(BodyName).NumberNodes
+                
+                num_frames=length(Simulation.(BodyName).(NodeName)(1,:));
+
+                NodeName = Bodies.(BodyName).NodeList(index1,:);
+
+                R = Simulation.(BodyName).(NodeName)(:,1);
+
+                Sx=R(1);
+                Sy=R(3);
+                Sz=R(2);
+
+                r=.1;
+
+                s(i)=surf(r*x+Sx,r*y+Sy,r*z+Sz);  % sphere centered at (x,y,z)
+                set(s(i),'EdgeColor','none');
+                set(s(i),'FaceLighting','phong','FaceColor','interp','AmbientStrength',0.1);
+
+                i=i+1;
+            end
         end
         
         for indexP=1:length(Bodies.(BodyName).PointsList)
@@ -91,36 +114,55 @@ axis equal;
             set(s(i),'FaceLighting','phong','FaceColor','interp','AmbientStrength',0.1);
             
             i=i+1;
-        end       
-    
+        end 
+        
+        
+        
     end
 
-            
-num_frames=length(Simulation.(BodyName).(NodeName)(1,:));
-
+        
+num_frames
 for f=2:1:num_frames
     
     i=1;
      for indexE=1:World.nbodies  
          BodyName=BodyList{indexE};        
+
         
-        for  index1 = 1:Bodies.(BodyName).NumberNodes
-            NodeName = Bodies.(BodyName).NodeList(index1,:);
+        if World.ElasticNet
 
-            R = Simulation.(BodyName).(NodeName)(:,f);
-           
-            Sx=R(1);
-            Sy=R(3);
-            Sz=R(2);
+                R = Simulation.(BodyName).r(:,f);
 
-            r=.1;
-            
-            %set(s(i+1),'xdata',r*Rot+Sx,'ydata',r*y+Sy,'zdata',r*z+Sz);  % sphere centered at (x,y,z)
-            set(s(i),'xdata',r*x+Sx,'ydata',r*y+Sy,'zdata',r*z+Sz);  % sphere centered at (x,y,z)
-            set(s(i),'EdgeColor','none');
-            set(s(i),'FaceLighting','phong','FaceColor','interp','AmbientStrength',0.1);
-            
-            i=i+1;
+                Sx=R(1);
+                Sy=R(3);
+                Sz=R(2);
+
+                r=.1;
+
+                s(i)=surf(r*x+Sx,r*y+Sy,r*z+Sz);  % sphere centered at (x,y,z)
+                set(s(i),'EdgeColor','none');
+                set(s(i),'FaceLighting','phong','FaceColor','interp','AmbientStrength',0.1);
+
+                i=i+1;
+        else        
+            for  index1 = 1:Bodies.(BodyName).NumberNodes
+                NodeName = Bodies.(BodyName).NodeList(index1,:);
+
+                R = Simulation.(BodyName).(NodeName)(:,f);
+
+                Sx=R(1);
+                Sy=R(3);
+                Sz=R(2);
+
+                r=.1;
+
+                %set(s(i+1),'xdata',r*Rot+Sx,'ydata',r*y+Sy,'zdata',r*z+Sz);  % sphere centered at (x,y,z)
+                set(s(i),'xdata',r*x+Sx,'ydata',r*y+Sy,'zdata',r*z+Sz);  % sphere centered at (x,y,z)
+                set(s(i),'EdgeColor','none');
+                set(s(i),'FaceLighting','phong','FaceColor','interp','AmbientStrength',0.1);
+
+                i=i+1;
+            end
         end
         
         for indexP=1:length(Bodies.(BodyName).PointsList)

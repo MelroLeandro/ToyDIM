@@ -13,6 +13,8 @@ clear all
 % Glabal variables used to 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+addpath('./dynamic')
+
 global World    % used to describe the world 
 global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
@@ -444,7 +446,7 @@ end
 
 % set integration parameters
 t0   = 0;    % Initial time
-t    = 100.00; % Final time
+t    = 1.00; % Final time
 step = 0.01; % Time-step
 
 
