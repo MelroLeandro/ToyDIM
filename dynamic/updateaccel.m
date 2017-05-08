@@ -381,9 +381,10 @@ if njoints > 0
             Qrj2=zeros(3,3);
             Qpj2=-skew(Bodies.(C1).Vectors.(V1).s)*skew(Bodies.(C2).Vectors.(V1).s)*Bodies.(C2).A;
 
-           regist(Bodies.(C2).Vectors.(V1).s,Bodies.(C1).Vectors.(V1).s,Bodies.(C1).A,Qpi2)
+         if strcmp(Jointname,'J1')
+           %regist(Bodies.(C2).Vectors.(V1).s,Bodies.(C1).Vectors.(V1).s,Bodies.(C1).A,Qpi2)
            regist(Bodies.(C1).Vectors.(V1).s,Bodies.(C2).Vectors.(V1).s,Bodies.(C2).A,Qpj2)
-
+         end
             Di2=[Qri2,Qpi2]; 
             Dj2=[Qrj2,Qpj2]; 
 
