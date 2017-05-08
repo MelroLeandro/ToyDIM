@@ -14,7 +14,7 @@ description: "<h1>A library of MATLAB tools  used to simulate the dynamic behavi
 </h1>"
 
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://melroleandro.github.io" # the base hostname & protocol for your site
+url: "" # the base hostname & protocol for your site
 twitter_username: MelroLeandro
 github_username:  MelroLeandro
 
