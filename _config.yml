@@ -2,13 +2,13 @@
 title: ToyDIM
 description: "A library of MATLAB tools  used to simulate the dynamic behavior of a rigid and flexible body system with arbitrary topology.
 "
-url: "http://melroleandro.github.io/ToyDIM/"
+url: "http://melroleandro.github.io"
 
 
 
 
 # Secondary Parameters
-baseurl: "/project-pages"
+baseurl: "/ToyDIM"
 header-img: img/home-bg.jpg
 headercolor: "#FFFFFF"
 logo: /project-pages/img/logos/Project-Pages-New-Logo-Inverted.png
