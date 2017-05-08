@@ -2,23 +2,23 @@
 title: ToyDIM
 description: "A library of MATLAB tools  used to simulate the dynamic behavior of a rigid and flexible body system with arbitrary topology.
 "
-url: "http://melroleandro.github.io"
+url: ""
 
 
 
 
 # Secondary Parameters
-baseurl: "/ToyDIM"
+baseurl: "https://melroleandro.github.io/ToyDIM/"
 header-img: img/home-bg.jpg
 headercolor: "#FFFFFF"
-logo: /project-pages/img/logos/Project-Pages-New-Logo-Inverted.png
+logo: /ToyDIM/img/logos/Project-Pages-New-Logo-Inverted.png
 
 # Tertiary Parameters
 github_username:  MelroLeandro
-project_repository: project-pages
-disqus_shortname: project-pages
-g-analytics: UA-75881392-1
-altmetric: true
+project_repository: ToyDIM
+disqus_shortname: ToyDIM
+#g-analytics: UA-75881392-1
+#altmetric: true
 
 # Build settings
 gems: [jekyll-paginate]
@@ -42,7 +42,7 @@ defaults:
 # Prose Settings
 prose:
   ignore: ['feed.xml', '/stl', '/ply', '/js', '/plugin', '/lib', '/projectors', '_layouts', '/_includes', 'Gruntfile.js', 'package.json', 'proselinks.jsonp', 'ppanchor.matin', '.gitignore', '/search', '/css', '/img', 'favicon.png','_data/*.json','LICENSES.md','README.md','colorscheme.scss','members.html','mentions.html','index.html']
-  siteurl: 'http://projectpages.github.io/project-pages/'
+  siteurl: 'https://melroleandro.github.io/ToyDIM/'
   ispp: true
   media: 'img'
   metadata:
@@ -107,7 +107,7 @@ prose:
       - name: "horizontal"
         field:
           element: "hidden"
-          value: </section></section><section markdown="1" data-background="http://projectpages.github.io/project-pages/img/slidebackground.png"><section markdown="1">
+          value: </section></section><section markdown="1" data-background="https://melroleandro.github.io/ToyDIM/img/slidebackground.png"><section markdown="1">
       - name: "vertical"
         field:
           element: "hidden"
@@ -115,7 +115,7 @@ prose:
       - name: "slideinit"
         field:
           element: "hidden"
-          value: <section markdown="1" data-background="http://projectpages.github.io/project-pages/img/slidebackground.png"><section markdown="1">
+          value: <section markdown="1" data-background="https://melroleandro.github.io/ToyDIM/img/slidebackground.png"><section markdown="1">
       - name: "theme"
         field:
           element: "select"
