@@ -9,9 +9,9 @@ url: ""
 
 # Secondary Parameters
 baseurl: "https://melroleandro.github.io/ToyDIM/"
-header-img: img/home-bg.jpg
+header-img: "img/home-bg.jpg"
 headercolor: "#FFFFFF"
-logo: /ToyDIM/img/logos/Project-Pages-New-Logo-Inverted.png
+logo: "img/logos/Project-Pages-New-Logo-Inverted.png"
 
 # Tertiary Parameters
 github_username:  MelroLeandro
