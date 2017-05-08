@@ -18,5 +18,5 @@ url: "" # the base hostname & protocol for your site
 twitter_username: MelroLeandro
 github_username:  MelroLeandro
 
-# Build settings
+# Build settings: changed
 markdown: kramdown
