@@ -1,7 +1,6 @@
 # Site settings
 title: ToyDIM
-description: "A library of MATLAB tools  used to simulate the dynamic behavior of a rigid and flexible body system with arbitrary topology.
-"
+description: "<b> The dynamic behavior of rigid and flexible multibody system in MATLAB.</b>"
 url: ""
 
 
@@ -11,7 +10,7 @@ url: ""
 baseurl: "https://melroleandro.github.io/ToyDIM/"
 header-img: "img/home-bg.jpg"
 headercolor: "#FFFFFF"
-logo: "img/logos/ToyDIM-New-Logo.png"
+logo: "img/logos/ToyDIM-Logo.png"
 
 # Tertiary Parameters
 github_username:  MelroLeandro
