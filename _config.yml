@@ -11,7 +11,7 @@ url: ""
 baseurl: "https://melroleandro.github.io/ToyDIM/"
 header-img: "img/home-bg.jpg"
 headercolor: "#FFFFFF"
-logo: "img/logos/Project-Pages-New-Logo-Inverted.png"
+logo: "img/logos/ToyDIM-New-Logo.png"
 
 # Tertiary Parameters
 github_username:  MelroLeandro
@@ -61,7 +61,7 @@ prose:
         field:
           element: "text"
           label: "Project"
-          value: ""           
+          value: ""
     _posts:
       - name: "subtitle"
         field:
@@ -103,7 +103,7 @@ prose:
         field:
           element: "text"
           label: "Project"
-          value: ""    
+          value: ""
       - name: "horizontal"
         field:
           element: "hidden"
@@ -127,13 +127,13 @@ prose:
             - name: "Blood"
               value: "blood"
             - name: "Moon"
-              value: "moon"          
+              value: "moon"
             - name: "Night"
               value: "night"
             - name: "Sky"
               value: "sky"
             - name: "Solarized"
-              value: "solarized"             
+              value: "solarized"
       - name: "trans"
         field:
           element: "select"
@@ -145,13 +145,13 @@ prose:
             - name: "Page"
               value: "page"
             - name: "Concave"
-              value: "concave"          
+              value: "concave"
             - name: "Linear"
               value: "linear"
             - name: "Fade"
               value: "fade"
             - name: "None"
-              value: "none"             
+              value: "none"
       - name: "visualworkflow"
         field:
           element: "checkbox"
