@@ -12,4 +12,4 @@ There a number of packages developed in academia which possess similar capabilit
 
 ToyDim is a library of MATLAB of examples and tools used to simulate the dynamic behavior of a rigid and flexible body system with arbitrary topology. The methodology used for dynamics follows (Parviz E. Nikravesh 1989), using an Augmented Lagrange Formulation and the direct integration method (DIM). To describe large relative rotations in deformable systems a finite element representation of each flexible component is used.
 
-![Image](https://github.com/MelroLeandro/ToyDIM/blob/master/img/deformablemesh.png)
+![Image](../img/deformablemesh.png)
