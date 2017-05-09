@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "About"
-description: "<bWhy learning dynamic with ToyDIM?</b"
+description: "<b>Why dynamics with ToyDIM?</b>"
 header-img: "img/home-bg.jpg"
 ---
 
