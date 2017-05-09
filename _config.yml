@@ -1,7 +1,6 @@
 # Site settings
 title: ToyDIM
-description: "A library of MATLAB tools  used to simulate the dynamic behavior of a rigid and flexible body system with arbitrary topology.
-"
+description: "<font color="red"> The dynamic behavior of rigid and flexible multibody system in MATLAB.</font>"
 url: ""
 
 
