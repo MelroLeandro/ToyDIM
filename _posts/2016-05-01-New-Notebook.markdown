@@ -22,7 +22,7 @@ Slieder_Crank_v01
 
 
 
-![image](https://github.com/MelroLeandro/ToyDIM/img/output_2_1.png)
+![image](https://melroleandro.github.io/ToyDIM/img/output_2_1.png)
 
 
 
