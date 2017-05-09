@@ -2,7 +2,7 @@
 layout:     post
 title:      Jupyter
 author:     Mellean
-tags: 		post template
+tags: 		post template Jupyter Notebook MATLAB
 subtitle:  	Install Jupyter with a MATLAB kernel
 category:  ToyDIM
 ---
@@ -25,34 +25,30 @@ you can install Jupyter via conda or pip.
 1. Using Anaconda
 First, make sure Anaconda is installed (see http://www.techinfected.net/2016/03/install-anaconda-ubuntu-linux.html
 ).
-'''
-conda install jupyter
-'''
+
+    conda install jupyter
 
 2. Using Pip or pip3
 First, make sure you have pip or pip3 installed. (sudo apt-get install python-pip)
 
 
-'''
-pip install jupyter
-'''
+    pip install jupyter
 or
-'''
-pip3 install jupyter
-'''
+
+    pip3 install jupyter
+
 
 # Running Jupyter Notebook
 
 Enter this command and jupyter will automatically open up in your default browser.
-'''
-jupyter notebook
-'''
+
+    jupyter notebook
+
 the default address is http://127.0.0.1:8888
 
 get more information
-'''
-jupyter notebook --help
-'''
+
+    jupyter notebook --help
 
 #  Installing Kernals
 
@@ -67,9 +63,9 @@ Install with python -mpip install imatlab (from PyPI) or python -mpip install gi
 
 To use it, run one of:
 
-'''
-$ jupyter notebook
-# In the notebook interface, select Matlab from the 'New' menu
-$ jupyter qtconsole --kernel imatlab
-$ jupyter console --kernel imatlab
-'''
+
+    $ jupyter notebook
+    # In the notebook interface, select Matlab from the 'New' menu
+    $ jupyter qtconsole --kernel imatlab
+    $ jupyter console --kernel imatlab
+
