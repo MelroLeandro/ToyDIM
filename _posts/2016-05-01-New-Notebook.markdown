@@ -5,8 +5,6 @@ author:     Mellean
 tags: 		jupyter workflows template
 subtitle:   Showcasing Jupyter Notebook Translator Layout
 category:  ToyDIM
-
-visualworkflow: true
 ---
 
 
@@ -24,7 +22,7 @@ Slieder_Crank_v01
 
 
 
-![png](./img_post_test/output_2_1.png)
+![png](img_post_test/output_2_1.png)
 
 
 
