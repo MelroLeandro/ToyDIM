@@ -6,6 +6,6 @@ tags: 		jupyter workflows template
 subtitle:   Showcasing Jupyter Notebook Translator Layout
 category:  ToyDIM
 
-notebookfilename: Test.ipynb
+notebookfilename: test
 visualworkflow: true
 ---
