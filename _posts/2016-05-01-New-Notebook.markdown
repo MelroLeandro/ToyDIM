@@ -18,11 +18,11 @@ Slieder_Crank_v01
 ```
 
 
-![png](./img_post_test/output_2_0.png)
+![image](./img_post_test/output_2_0.png)
 
 
 
-![png](https://github.com/MelroLeandro/ToyDIM/img/output_2_1.png)
+![image](https://github.com/MelroLeandro/ToyDIM/img/output_2_1.png)
 
 
 
