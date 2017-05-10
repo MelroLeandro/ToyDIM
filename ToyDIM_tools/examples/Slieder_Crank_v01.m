@@ -61,8 +61,8 @@ World.Flexible=false;
 
 BodyList={'Ground','C1','C2','C3'}; % list of system bodies
 JointList={'Fix','J1','J2','J3','Slide'}; % list of dynamic constrains
-%Motors={'Chank'};
-Motors={};
+Motors={'Chank'};
+%Motors={};
 
 %Ground: body C1
 %Geometry

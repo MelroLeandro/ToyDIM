@@ -4,7 +4,7 @@ title:      New Matlab Script
 author:     Ahmet Cecen
 tags: 		matlab workflows template
 subtitle:   Some Short Description of the Script
-category:  project1
+category:  ToyDIM
 visualworkflow: true
 ---
 {% if page.visualworkflow == true %}
