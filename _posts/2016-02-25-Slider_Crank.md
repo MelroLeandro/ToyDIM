@@ -16,7 +16,7 @@ visualworkflow: true
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
 -->
-
+<pre class="codeinput">
 <span class="comment">%------------------------------Multibody Dynamic--------------------------%</span>
 <span class="comment">%------------------------------A toy system-------------------------------%</span>
 <span class="comment">% Problem:  3D slider-crank</span>
@@ -72,9 +72,11 @@ World.Err=[];
 
 <span class="comment">% Flexible Multibody system</span>
 World.Flexible=false;
+</pre>
 
 <h2>Multibody system configuration <a name="2"></a></h2>
 
+<pre class="codeinput">
 BodyList={<span class="string">'Ground'</span>,<span class="string">'C1'</span>,<span class="string">'C2'</span>,<span class="string">'C3'</span>}; <span class="comment">% list of system bodies</span>
 JointList={<span class="string">'Fix'</span>,<span class="string">'J1'</span>,<span class="string">'J2'</span>,<span class="string">'J3'</span>,<span class="string">'Slide'</span>}; <span class="comment">% list of dynamic constrains</span>
 <span class="comment">%Motors={'Chank'};</span>
@@ -212,8 +214,10 @@ Bodies.C3.w=[0,0,0]';
 Bodies.C3.wp=[0,0,0]';
 Bodies.C3.np=[0,0,0]';
 Bodies.C3.exists=true;
+</pre>
 
 <h2>System dynamic constrains <a name="3"></a></h2>
+
 <pre class="codeinput"><span class="comment">%Ground joint</span>
 
 Joints.Fix.type=<span class="string">'Fix'</span>;  <span class="comment">% fix body in the space</span>
@@ -257,13 +261,16 @@ Joints.Slide.body_1=<span class="string">'C3'</span>; <span class="comment">% bo
 
 <span class="comment">% Tansport Multibody system information</span>
 
+
 World.nbodies = length(BodyList);  <span class="comment">% number of bodies in the system</span>
 World.njoints = length(JointList); <span class="comment">% number of joints in the system</span>
 World.nmotors = length(Motors); <span class="comment">% number of motors in the system</span>
 World.NNodes  = 0 ;            <span class="comment">% count number of nodes in the system</span>
 World.Msize   = World.NNodes*6+World.nbodies*6; <span class="comment">% mass matrix size</span>
+</pre>
 
 <h2>Mass matrix assembly <a name="4"></a></h2>
+
 <pre class="codeinput">y_d=[];
 
 nbodies=length(BodyList);
@@ -312,10 +319,13 @@ timeode45=toc
 timeode45 =
 
     4.7749
+</pre>
 
 <h2>Output <a name="6"></a></h2>
 
-</pre><p>Graphic output: Orthogonal projections of each body</p><pre class="codeinput">fig=figure;
+<p>Graphic output: Orthogonal projections of each body</p>
+
+<pre class="codeinput">fig=figure;
 <span class="keyword">for</span> index=1:nbodies
     BodyName=BodyList{index};
     plot(yT(:,(index-1)*13+2), yT(:,(index-1)*13+3))
