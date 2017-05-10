@@ -17,7 +17,6 @@ This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
 -->
 
-<div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Multibody system configuration</a></li></ul></div><pre class="codeinput"><span class="comment">%-------------------------------------------------------------------------%</span>
 <span class="comment">%------------------------------Multibody Dynamic--------------------------%</span>
 <span class="comment">%------------------------------A toy system-------------------------------%</span>
 <span class="comment">% Problem:  3D slider-crank</span>
@@ -44,7 +43,11 @@ addpath(<span class="string">'../dynamic'</span>)
 
 
 <span class="keyword">global</span> TT Err Ke Pe
-</pre><p>World parameters</p><pre class="codeinput">World.gravity=[0;0;0]; <span class="comment">% force to be applied on each body</span>
+</pre>
+
+<h2>World parameters <a name="1"></a></h2>
+
+<pre class="codeinput">World.gravity=[0;0;0]; <span class="comment">% force to be applied on each body</span>
 
 World.ElasticNet = false;  <span class="comment">% force are generated using and elastic network</span>
 World.Regularistion = true;
@@ -70,8 +73,7 @@ World.Err=[];
 <span class="comment">% Flexible Multibody system</span>
 World.Flexible=false;
 
-<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-</pre><h2>Multibody system configuration<a name="3"></a></h2><pre class="codeinput"><span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<h2>Multibody system configuration <a name="2"></a></h2>
 
 BodyList={<span class="string">'Ground'</span>,<span class="string">'C1'</span>,<span class="string">'C2'</span>,<span class="string">'C3'</span>}; <span class="comment">% list of system bodies</span>
 JointList={<span class="string">'Fix'</span>,<span class="string">'J1'</span>,<span class="string">'J2'</span>,<span class="string">'J3'</span>,<span class="string">'Slide'</span>}; <span class="comment">% list of dynamic constrains</span>
@@ -210,7 +212,9 @@ Bodies.C3.w=[0,0,0]';
 Bodies.C3.wp=[0,0,0]';
 Bodies.C3.np=[0,0,0]';
 Bodies.C3.exists=true;
-</pre><p>System dynamic constrains</p><pre class="codeinput"><span class="comment">%Ground joint</span>
+
+<h2>System dynamic constrains <a name="3"></a></h2>
+<pre class="codeinput"><span class="comment">%Ground joint</span>
 
 Joints.Fix.type=<span class="string">'Fix'</span>;  <span class="comment">% fix body in the space</span>
 Joints.Fix.body_1=<span class="string">'Ground'</span>; <span class="comment">% body identifier</span>
@@ -258,7 +262,9 @@ World.njoints = length(JointList); <span class="comment">% number of joints in t
 World.nmotors = length(Motors); <span class="comment">% number of motors in the system</span>
 World.NNodes  = 0 ;            <span class="comment">% count number of nodes in the system</span>
 World.Msize   = World.NNodes*6+World.nbodies*6; <span class="comment">% mass matrix size</span>
-</pre><p>Mass matrix assembly</p><pre class="codeinput">y_d=[];
+
+<h2>Mass matrix assembly <a name="4"></a></h2>
+<pre class="codeinput">y_d=[];
 
 nbodies=length(BodyList);
 World.M=zeros(nbodies*6);
@@ -274,7 +280,11 @@ World.M=zeros(nbodies*6);
     <span class="comment">% recursive definition for the initial force</span>
     y_d=[y_d; Bodies.(BodyName).r;Bodies.(BodyName).p;Bodies.(BodyName).r_d;Bodies.(BodyName).w];
 <span class="keyword">end</span>
-</pre><p>Start simulation</p><pre class="codeinput"><span class="comment">% set integration parameters</span>
+</pre>
+
+<h2>Start simulation <a name="5"></a></h2>
+
+<pre class="codeinput"><span class="comment">% set integration parameters</span>
 t0=0;    <span class="comment">% Initial time</span>
 t=20.00; <span class="comment">% Final time</span>
 step=0.001; <span class="comment">% Time-step</span>
@@ -302,6 +312,8 @@ timeode45=toc
 timeode45 =
 
     4.7749
+
+<h2>Output <a name="6"></a></h2>
 
 </pre><p>Graphic output: Orthogonal projections of each body</p><pre class="codeinput">fig=figure;
 <span class="keyword">for</span> index=1:nbodies
@@ -377,385 +389,3 @@ xlabel(<span class="string">'iteration'</span>),ylabel(<span class="string">'Ke'
 <span class="comment">% save('Graph.mat','yT','ListaCorpos','Corpo');</span>
 </pre><img vspace="5" hspace="5" src="data:image/png;base64, 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"  alt="">
  <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
-##### SOURCE BEGIN #####
-%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-%
-%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHMultibody DynamicREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH%
-%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHA toy systemREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-% 
-% Problem:  3D slider-crank
-% Autor: Mellean
-% Data: 25Fev16
-% Version: 
-%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-%
-clc
-clear all
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Glabal variables used to 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-addpath('../dynamic')
-
-global World % used to describe the world 
-global BodyList % List with body identifiers
-global JointList % List with dynamic constrains identifiers
-global Bodies % Structure with every rigid bodies in the system
-global Joints % Structure with dynamics constrains 
-global Simulation
-global Motors
-global Motor
-
-
-global TT Err Ke Pe
-
-%%
-% World parameters
-
-World.gravity=[0;0;0]; % force to be applied on each body
-
-World.ElasticNet = false;  % force are generated using and elastic network
-World.Regularistion = true;
-World.RFactor = 1e-15;     % regularization factor
-World.FMNcontact = false;
-World.FMNdensity = false;
-
-% Contact
-World.n=1.5;
-World.e=0.6;
-World.k=2*10^4;
-World.mu=0.74;
-
-% Baumgarte Method
-World.alpha=5.0;
-World.beta=5.0;
-
-% Debugging information
-
-World.C1=[];
-World.Err=[];
-
-% Flexible Multibody system
-World.Flexible=false;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Multibody system configuration
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-BodyList={'Ground','C1','C2','C3'}; % list of system bodies
-JointList={'Fix','J1','J2','J3','Slide'}; % list of dynamic constrains
-%Motors={'Chank'};
-Motors={};
-
-%Ground: body C1
-%Geometry
-
-Bodies.Ground.geo.m=1; % mass
-Bodies.Ground.flexible=false;
-
-% Inertia tensor for body Ground
-Bodies.Ground.geo.JP=diag([1,1,1]);
-
-% Points in body C1
-Bodies.Ground.PointsList={'P1','A'};
-Bodies.Ground.Points.P1.sPp=[0,0.5,0]'; % local frame coordinates
-Bodies.Ground.Points.A.sPp=[0,5,0]';  % B is a reference point used on the slicer
-
-% Vectors in body C1
-Bodies.Ground.VectorsList={'V0','V1','V2'};
-Bodies.Ground.Vectors.V0.sP=[1,0,0]'; % local frame coordinates
-Bodies.Ground.Vectors.V1.sP=[0,1,0]';
-Bodies.Ground.Vectors.V2.sP=[0,0,1]';
-
-% Body initial values
-Bodies.Ground.r=[0,0.0,0]'; % Body initial position in global coordinates
-Bodies.Ground.r_d=[0,0,0]';  % initial velocity
-Bodies.Ground.r_dd=[0,0,0]';  % initial acceleration
-Bodies.Ground.p=[1,0,0,0]';  % initial Euler parameters
-Bodies.Ground.p_d=[0,0,0,0]';% Euler parameters derivative
-Bodies.Ground.w=[0,0,0]';    % initial angular velocity
-Bodies.Ground.wp=[0,0,0]';  % initial angular acceleration
-Bodies.Ground.np=[0,0,0]';   % initial moment
-Bodies.Ground.exists=true;
-
-%Body C1 a Rod
-%%Geometry
-Bodies.C1.geo.m=1; % rod mass
-Bodies.C1.geo.h=1; % rod length
-Bodies.C1.geo.r=1; % rod radius
-Bodies.C1.flexible=false;
-
-% Inertia tensor for body C1
-Bodies.C1.geo.JP=diag([1/12*(Bodies.C1.geo.m*(3*Bodies.C1.geo.r^2+Bodies.C1.geo.h^2)),1/2*(Bodies.C1.geo.m*Bodies.C1.geo.r^2),...
-     1/12*(Bodies.C1.geo.m*(3*Bodies.C1.geo.r^2+Bodies.C1.geo.h^2))]);
-
-%List of points in body C1
-Bodies.C1.PointsList={'P1','P2'};
-
-Bodies.C1.Points.P1.sPp=[0,-0.5,0]';
-Bodies.C1.Points.P2.sPp=[0,0.5,0]';
-
-%List of vectors in body C1
-Bodies.C1.VectorsList={'V0','V1','V2'};
-Bodies.C1.Vectors.V0.sP=[1,0,0]';
-Bodies.C1.Vectors.V1.sP=[0,1,0]';
-Bodies.C1.Vectors.V2.sP=[0,0,1]';
-
-% Body initial values
-Bodies.C1.r=[0,0.5697,-0.4951]'; 
-Bodies.C1.r_d=[0,0.1330,0.0187]'; 
-Bodies.C1.r_dd=[0,-0.0057,0.0356]'; 
-Bodies.C1.p=[-0.7548,0.6560,0,0]'; 
-Bodies.C1.p_d=[-0.0881,-0.1014,0,0]'; 
-Bodies.C1.w=[0.2686,0,0]'; 
-Bodies.C1.wp=[0,0,0]'; 
-Bodies.C1.np=[0,0,0]';
-Bodies.C1.exists=true;
-
-%Body C2 a Rod
-%%Geometry
-Bodies.C2.geo.m=1; % rod mass
-Bodies.C2.geo.h=1; % rod length
-Bodies.C2.geo.r=1; % rod radius
-Bodies.C2.flexible=false;
-
-% Inertia tensor for body C2
-Bodies.C2.geo.JP=diag([1/12*(Bodies.C2.geo.m*(3*Bodies.C2.geo.r^2+Bodies.C2.geo.h^2)),1/2*(Bodies.C2.geo.m*Bodies.C2.geo.r^2),...
-     1/12*(Bodies.C2.geo.m*(3*Bodies.C2.geo.r^2+Bodies.C2.geo.h^2))]);
-
-%List of points in body C2
-Bodies.C2.PointsList={'P2','P3'};
-
-Bodies.C2.Points.P2.sPp=[0,-2.5,0]';
-Bodies.C2.Points.P3.sPp=[0,2.5,0]';
-
-%List of vectors in body C3
-Bodies.C2.VectorsList={'V0','V1','V2'};
-Bodies.C2.Vectors.V0.sP=[1,0,0]';
-Bodies.C2.Vectors.V1.sP=[0,1,0]';
-Bodies.C2.Vectors.V2.sP=[0,0,1]';
-
-% Body initial values
-Bodies.C2.r=[0,3.0898,-0.4951]'; 
-Bodies.C2.r_d=[0,0.2698,0.0187]'; 
-Bodies.C2.r_dd=[0,-0.0044,0.0356]'; 
-Bodies.C2.p=[0.9950,0.0995,0,0]'; 
-Bodies.C2.p_d=[0.0004,-0.0038,0,0]'; 
-Bodies.C2.w=[-0.0076,0,0]'; 
-Bodies.C2.wp=[0,0,0]'; 
-Bodies.C2.np=[0,0,0]';
-Bodies.C2.exists=true;
-
-%Body C3 a Rod
-%%Geometry
-Bodies.C3.geo.m=3; % rod mass
-Bodies.C3.geo.h=1; % rod length
-Bodies.C3.geo.r=1; % rod radius
-Bodies.C3.flexible=false;
-
-% Inertia tensor for body C3
-Bodies.C3.geo.JP=diag([1/12*(Bodies.C3.geo.m*(3*Bodies.C3.geo.r^2+Bodies.C3.geo.h^2)),1/2*(Bodies.C3.geo.m*Bodies.C3.geo.r^2),...
-     1/12*(Bodies.C3.geo.m*(3*Bodies.C3.geo.r^2+Bodies.C3.geo.h^2))]);
-
-%List of points in body C3
-Bodies.C3.PointsList={'P3','A'};
-
-Bodies.C3.Points.P3.sPp=[0,-0.5,0]';
-Bodies.C3.Points.A.sPp=[0,1,0]';
-%List of vectors in body C3
-Bodies.C3.VectorsList={'V0','V1','V2'};
-Bodies.C3.Vectors.V0.sP=[-1,0,0]';
-Bodies.C3.Vectors.V1.sP=[0,-1,0]';
-Bodies.C3.Vectors.V2.sP=[0,0,-1]';
-Bodies.C3.fLL=[0,0,0]';
-
-% Body initial values
-Bodies.C3.r=[0,6.0403,0]'; 
-Bodies.C3.r_d=[0,0.2735,0]'; 
-Bodies.C3.r_dd=[0,0.0026,0]'; 
-Bodies.C3.p=[1,0,0,0]'; 
-Bodies.C3.p_d=[0,0,0,0]'; 
-Bodies.C3.w=[0,0,0]'; 
-Bodies.C3.wp=[0,0,0]'; 
-Bodies.C3.np=[0,0,0]';
-Bodies.C3.exists=true;
-
-%%
-% System dynamic constrains
-
-%Ground joint
-
-Joints.Fix.type='Fix';  % fix body in the space
-Joints.Fix.body_1='Ground'; % body identifier
-
-%Sherical joint linking body C1 and body C2
-Joints.J1.type='Rev2';  % spherical joint between body_1 and body_2
-Joints.J1.body_1='Ground'; % body_1 identifier
-Joints.J1.body_2='C1'; % body_2 identifier
-Joints.J1.point='P1';  % point identifier
-Joints.J1.vector1='V0'; % vector identifier
-Joints.J1.vector11='V1'; % vector identifier
-Joints.J1.vector12='V2'; % vector identifier
-
-% Revolute joint linking body C2 and body C3
-Joints.J2.type='Rev2';  % revolute joint between body_1 and body_2
-Joints.J2.body_1='C1'; % body_1 identifier
-Joints.J2.body_2='C2'; % body_2 identifier
-Joints.J2.point='P2';  % point identifier
-Joints.J2.vector1='V0'; % vector identifier
-Joints.J2.vector11='V1'; % vector identifier
-Joints.J2.vector12='V2'; % vector identifier
-
-% Revolute joint linking body C2 and body C3
-Joints.J3.type='Rev2';  % revolute joint between body_1 and body_2
-Joints.J3.body_1='C2'; % body_1 identifier
-Joints.J3.body_2='C3'; % body_2 identifier
-Joints.J3.point='P3';  % point identifier
-Joints.J3.vector1='V0'; % vector identifier
-Joints.J3.vector11='V1'; % vector identifier
-Joints.J3.vector12='V2'; % vector identifier
-
-% Slide linking body C3 and Ground
-Joints.Slide.type='FixSlide';  % fix body in the space
-Joints.Slide.body_1='C3'; % body identifier
-
- Motor.Chank.type='linear';
- Motor.Chank.body='C1';
- Motor.Chank.Point='P2';
- Motor.Chank.force=[0,0,0.001]';
-
-% Tansport Multibody system information
-
-World.nbodies = length(BodyList);  % number of bodies in the system 
-World.njoints = length(JointList); % number of joints in the system
-World.nmotors = length(Motors); % number of motors in the system
-World.NNodes  = 0 ;            % count number of nodes in the system
-World.Msize   = World.NNodes*6+World.nbodies*6; % mass matrix size
-
-%%
-% Mass matrix assembly
-
-y_d=[];
-
-nbodies=length(BodyList);
-World.M=zeros(nbodies*6);
-
-for indexE=1:nbodies
-    BodyName=BodyList{indexE};
-    Bodies.(BodyName).g=World.gravity;
-    O=zeros(3,3);
-    index=(indexE-1)*6+1;
-    
-    Bodies.(BodyName).index=index; % body index in the mass matrix
-    Bodies.(BodyName).forca=[];
-    % recursive definition for the initial force
-    y_d=[y_d; Bodies.(BodyName).r;Bodies.(BodyName).p;Bodies.(BodyName).r_d;Bodies.(BodyName).w];
-end
-
-
-%% 
-% Start simulation
-
-% set integration parameters
-t0=0;    % Initial time
-t=20.00; % Final time
-step=0.001; % Time-step
-
-
-tspan = [t0:step:t];
-
-% Set integrator and its parameters
-
-fprintf('\n\n ODE45\n\n')
-tol=1e-5;
-options=odeset('RelTol',tol,'Stats','on','OutputFcn',@odeOUT); 
-
-tic
-[T, yT]= ode45(@updateaccel, tspan, y_d, options);
-timeode45=toc
-
-%%
-% Graphic output: Orthogonal projections of each body
-
-fig=figure;
-for index=1:nbodies 
-    BodyName=BodyList{index};
-    plot(yT(:,(index-1)*13+2), yT(:,(index-1)*13+3))
-    
-    hold on
-end
-xlabel('y'),ylabel('z')
-legend('position y','position z')
-% print(fig,'Position y z','-dpng')
-hold off
-
-fig=figure;
-for index=1:nbodies
-    BodyName=BodyList{index};
-    plot(yT(:,(index-1)*13+1), yT(:,(index-1)*13+3))   
-    hold on
-end
-xlabel('x'),ylabel('z')
-legend('position x','position z')
-% print(fig,'Position x z','-dpng')
-hold off
-
-fig=figure;
-for index=1:nbodies
-    BodyName=BodyList{index};
-    plot(yT(:,(index-1)*13+1), yT(:,(index-1)*13+2))   
-    hold on
-end
-xlabel('x'),ylabel('y')
-legend('position x','position y')
-% print(fig,'Position x z','-dpng')
-hold off
-
-fig=figure;
-for index=1:nbodies
-    BodyName=BodyList{index};
-    plot(yT(:,(index-1)*13+1), yT(:,(index-1)*13+2))   
-    hold on
-end
-xlabel('x'),ylabel('y')
-legend('position x','position y')
-% print(fig,'Position x z','-dpng')
-hold off
-
-%%
-% Graphic output:Velocity of body 4 c-of-m
-
-indexE=4;
-figure; plot(T, yT(:,(indexE-1)*13+9));
-xlabel('T'),ylabel('slider y_d [m/s]')
-%print(fig,'velocity x','-dpng')
-hold off
-
-%%
-% Graphic output: Position of body 4 c-of-m
-indexE=4;
-figure; plot(T, yT(:,(indexE-1)*13+2));
-xlabel('T'),ylabel('slider y [m]')
-%print(fig,'position y','-dpng')
-hold off
-
-
-%%
-% Graphic output:Velocity of body 3 c-of-m
-figure; plot(Simulation.C3.vel(2,:)')
-xlabel('Interation'),ylabel('slider y_d [m/s]')
-
-%%
-% Graphic output: acceleration of body 3 c-of-m
-
-figure; plot(Simulation.C3.acc(2,:)')
-xlabel('Interation'),ylabel('slider y_dd [m/s]')
-
-%%
-% Graphic output: Error on thr system constrains
-fig=figure;plot( Err) 
-xlabel('iteration'),ylabel('Error')
-
-%%
-% Graphic output:  System kinetic Energy
-fig=figure; plot(Ke) 
-xlabel('iteration'),ylabel('Ke')
-
-% save('Graph.mat','yT','ListaCorpos','Corpo');
