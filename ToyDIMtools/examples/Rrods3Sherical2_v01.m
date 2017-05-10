@@ -11,7 +11,7 @@ clear all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Global variables used to 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-addpath('./dynamic')
+addpath('../dynamic')
 
 global World % used to describe the world 
 global BodyList % List with body identifiers
@@ -233,7 +233,7 @@ end
 
 % set integration parameters
 t0=0;    % Initial time
-t=300.00; % Final time
+t=100.00; % Final time
 step=0.001; % Time-step
 
 
@@ -252,6 +252,9 @@ timeode45=toc
 %%
 % Graphic output
 
+%%
+% Output: systems c-of-m yz-projection
+
 fig=figure;
 for index=1:nbodies 
     BodyName=BodyList{index};
@@ -264,6 +267,8 @@ xlabel('y'),ylabel('z')
 
 hold off
 
+%%
+% Output: systems c-of-m xz-projection
 fig=figure;
 for index=1:nbodies
     BodyName=BodyList{index};
@@ -273,7 +278,10 @@ end
 xlabel('x'),ylabel('z')
 % print(fig,'Positionxz','-dpng')
 hold off
-% Velocidades**2
+
+%%
+% Output: Velocidades**2
+
 fig=figure;
 for indexE=1:nbodies
     L=yT(:,(indexE-1)*13+8:(indexE-1)*13+10);
@@ -288,10 +296,10 @@ xlabel('T'),ylabel('v^2[m/s]')
 %print(fig,'velocity','-dpng')
 hold off
 
-% Error on the system constrains
+%%
+% Output: Error on the system constrains
+
 fig=figure;
 plot( Err) 
 xlabel('iteration'),ylabel('Error')
 
-% Used to movie criation
-save('Graph.mat','yT','BodyList','Bodies');
