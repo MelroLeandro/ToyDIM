@@ -419,7 +419,6 @@ legend('Points','Nodes')
 % print(fig,'Position y z','-dpng')
 hold off
 
-klkl
 %%
 % Graphic output: X-Z
 

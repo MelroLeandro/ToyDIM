@@ -12,14 +12,16 @@ clear all
 % Global variables used to 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath('./dynamic')
+addpath('../dynamic')
+addpath('../contact')
 
 global World % used to describe the world 
 global BodyList % List with body identifiers
 global JointList % List with dynamic constrains identifiers
 global Bodies % Structure with every rigid bodies in the system
 global Joints % Structure with dynamics constrains 
-
+global Motors
+global Motor
 
 global TT Err
 
@@ -67,12 +69,15 @@ World.INTecoder_z=zeros(1,fix(World.Max(3)));
 
 % Flexible Multibody system
 World.Flexible=false;
+World.ElasticNet = false;  % force are generated using and elastic network
+World.Regularistion = false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Multibody system configuration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 JointList={'Fix'}; % list of dynamic constrains
+Motors={};
 
 %Ground: body Ground
 %Geometry
@@ -204,6 +209,7 @@ BodyList=fieldnames(Bodies);
 
 World.nbodies = length(BodyList);  % number of bodies in the system 
 World.njoints = length(JointList); % number of joints in the system
+World.nmotors = length(Motors); % number of motors in the system
 World.NNodes  = 0;                 % count number of nodes in the system
 World.Msize   = World.NNodes*6+World.nbodies*6; % mass matrix size
 
