@@ -240,7 +240,7 @@ end
 
 % set integration parameters
 t0=0;    % Initial time
-t=7.0; % Final time 7.22
+t=4.5; % Final time 7.22
 step=0.01; % Time-step
 
 
